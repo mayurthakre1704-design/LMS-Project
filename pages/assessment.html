@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LearnGreen — Assessments</title><link rel="stylesheet" href="../css/global.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/></head><body>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+<nav class="navbar"><a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a><div class="navbar-right"><a href="all-courses.html" class="btn btn-outline">Browse</a><a href="profile.html" class="btn btn-primary">Account</a></div></nav>
+<div class="page-layout">
+<aside class="sidebar"><div class="sidebar-user"><div class="sidebar-avatar">A</div><div class="sidebar-name">Alex Johnson</div><div class="sidebar-role">Student • Pro</div></div>
+<ul class="sidebar-menu"><li class="menu-section-label">Main</li>
+<li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+<li><a href="my-courses.html"><i class="fas fa-book-open"></i>My Courses</a></li>
+<li><a href="all-courses.html"><i class="fas fa-th-large"></i>All Courses</a></li>
+<li><a href="assessment.html"><i class="fas fa-tasks"></i>Assessments</a></li>
+<li class="menu-section-label">Learning</li>
+<li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+<li><a href="quiz.html"><i class="fas fa-question-circle"></i>Quizzes</a></li>
+<li class="menu-section-label">Account</li>
+<li><a href="profile.html"><i class="fas fa-user"></i>Profile</a></li>
+<li><a href="edit-profile.html"><i class="fas fa-cog"></i>Settings</a></li>
+<li><a href="admin-dashboard.html"><i class="fas fa-shield-alt"></i>Admin</a></li>
+<li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+</ul></aside>
+<main class="main">
+<div class="page-header"><div class="page-header-left"><h1>Assessments & Quizzes</h1><p>Track your progress</p></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:26px;">
+  <div class="card" style="border-left:4px solid #e53935;"><div class="card-title" style="color:#c62828;">Due Soon 🔴</div>
+    <div style="display:flex;gap:12px;align-items:center;background:#ffebee;border-radius:10px;padding:12px;margin-bottom:10px;"><span style="font-size:22px;">⚡</span><div style="flex:1;"><div style="font-weight:700;font-size:13px;">Python Final Quiz</div><div style="font-size:11px;color:var(--gray-text);">Python Bootcamp • Due: Mar 18</div></div><a href="quiz.html" class="btn btn-primary btn-sm">Start</a></div>
+    <div style="display:flex;gap:12px;align-items:center;background:#fff3e0;border-radius:10px;padding:12px;"><span style="font-size:22px;">📝</span><div style="flex:1;"><div style="font-weight:700;font-size:13px;">React Project Submission</div><div style="font-size:11px;color:var(--gray-text);">React.js Course • Due: Mar 26</div></div><button class="btn btn-outline btn-sm" onclick="showToast(`Uploading project...`)">Upload</button></div>
+  </div>
+  <div class="card"><div class="card-title" style="color:var(--green-dark);">Completed ✅</div>
+    <div style="display:flex;gap:12px;align-items:center;background:var(--green-pale);border-radius:10px;padding:12px;margin-bottom:10px;"><span style="font-size:22px;">🏆</span><div style="flex:1;"><div style="font-weight:700;font-size:13px;">Python Basics Quiz</div><div style="font-size:11px;color:var(--gray-text);">Score: 85% • Mar 10</div></div><span class="status status-active">Passed</span></div>
+    <div style="display:flex;gap:12px;align-items:center;background:var(--green-pale);border-radius:10px;padding:12px;"><span style="font-size:22px;">🏆</span><div style="flex:1;"><div style="font-weight:700;font-size:13px;">ML Final Assessment</div><div style="font-size:11px;color:var(--gray-text);">Score: 92% • Mar 5</div></div><span class="status status-active">Distinction</span></div>
+  </div>
+</div>
+<div class="table-card"><div class="table-card-head"><h3>All Assessments</h3></div>
+<table><thead><tr><th>Assessment</th><th>Course</th><th>Due Date</th><th>Score</th><th>Status</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>Python Final Quiz</td><td>Python Bootcamp</td><td>Mar 18, 2026</td><td>—</td><td><span class="status status-pending">Pending</span></td><td><a href="quiz.html" class="btn btn-sm" style="background:#e3f2fd;color:#1565c0;">Take Quiz</a></td></tr>
+<tr><td>React Project</td><td>React.js Course</td><td>Mar 26, 2026</td><td>—</td><td><span class="status status-pending">Pending</span></td><td><button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);" onclick="showToast(`Submit project`)">Submit</button></td></tr>
+<tr><td>Python Basics Quiz</td><td>Python Bootcamp</td><td>Mar 10</td><td>85%</td><td><span class="status status-active">Passed</span></td><td><a href="quiz.html" class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);">Review</a></td></tr>
+<tr><td>ML Final Assessment</td><td>Machine Learning A-Z</td><td>Mar 5</td><td>92%</td><td><span class="status status-active">Passed</span></td><td><a href="quiz.html" class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);">Review</a></td></tr>
+</tbody></table></div></main></div>
+<script src="../js/main.js"></script></body></html>

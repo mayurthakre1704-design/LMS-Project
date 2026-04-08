@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Edit Profile</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+
+    /* ── LAYOUT ── */
+    .ep-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 22px;
+    }
+
+    /* ── SETTINGS NAV (left panel) ── */
+    .settings-nav {
+      background: white;
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+    .snav-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 11px 14px; border-radius: 9px;
+      font-size: 13px; font-weight: 500; color: var(--gray-text);
+      cursor: pointer; transition: all 0.18s;
+      border: none; background: transparent;
+      font-family: 'Poppins', sans-serif;
+      width: 100%; text-align: left;
+    }
+    .snav-item i { width: 16px; text-align: center; font-size: 14px; }
+    .snav-item:hover  { background: var(--green-pale); color: var(--green-dark); }
+    .snav-item.active { background: var(--green-main); color: white; }
+    .snav-divider { height: 1px; background: var(--gray-border); margin: 8px 4px; }
+    .snav-item.danger:hover { background: #ffebee; color: #c62828; }
+
+    /* ── SECTION PANELS ── */
+    .ep-section { display: none; }
+    .ep-section.active { display: block; }
+
+    /* ── SECTION HEADER ── */
+    .section-hd {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px; padding-bottom: 18px;
+      border-bottom: 2px solid var(--gray-border);
+    }
+    .section-hd-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--green-pale); color: var(--green-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .section-hd h2 { font-size: 20px; font-weight: 800; color: var(--green-dark); }
+    .section-hd p  { font-size: 13px; color: var(--gray-text); margin-top: 2px; }
+
+    /* ── PROFILE PHOTO AREA ── */
+    .photo-area {
+      display: flex; align-items: center; gap: 28px;
+      background: var(--green-pale);
+      border-radius: 14px; padding: 24px 28px;
+      margin-bottom: 28px;
+    }
+    .photo-preview {
+      width: 100px; height: 100px; border-radius: 22px;
+      background: linear-gradient(135deg, var(--green-main), var(--green-light));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; font-weight: 800; color: white;
+      flex-shrink: 0; position: relative;
+      overflow: hidden; cursor: pointer;
+      border: 3px solid white; box-shadow: var(--shadow);
+    }
+    .photo-preview img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+      font-size: 22px; color: white;
+    }
+    .photo-preview:hover .photo-overlay { opacity: 1; }
+
+    .photo-actions h3 { font-size: 15px; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .photo-actions p  { font-size: 12px; color: var(--gray-text); margin-bottom: 14px; line-height: 1.6; }
+    .photo-btn-row    { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* Hidden file input */
+    #photo-input { display: none; }
+
+    /* ── FORM GRID ── */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .fg { margin-bottom: 20px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-text); margin-bottom: 7px; }
+    .fg label .req { color: #e53935; margin-left: 3px; }
+
+    .iw { position: relative; }
+    .iw i.il { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #9aab9a; font-size: 14px; pointer-events: none; }
+    .iw input, .iw select {
+      width: 100%; padding: 12px 14px 12px 40px;
+      border: 2px solid var(--gray-border); border-radius: 10px;
+      font-size: 14px; font-family: 'Poppins', sans-serif;
+      color: var(--gray-dark); background: var(--gray-bg); outline: none;
+      transition: all 0.2s;
+    }
+    .iw input:focus, .iw select:focus {
+      border-color: var(--green-main);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(45,140,78,0.1);
+    }
+    .iw input.changed { border-color: var(--green-main); background: white; }
+    textarea.form-ta {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid var(--gray-border); border-radius: 10px;
+      font-size: 14px; font-family: 'Poppins', sans-serif;
+      color: var(--gray-dark); background: var(--gray-bg);
+      outline: none; resize: vertical; min-height: 100px;
+      transition: all 0.2s;
+    }
+    textarea.form-ta:focus {
+      border-color: var(--green-main); background: white;
+      box-shadow: 0 0 0 3px rgba(45,140,78,0.1);
+    }
+    .char-count { font-size: 11px; color: #9aab9a; text-align: right; margin-top: 4px; }
+
+    /* ── SOCIAL LINK ROW ── */
+    .social-link-row {
+      display: flex; align-items: center; gap: 12px;
+      background: white; border: 2px solid var(--gray-border);
+      border-radius: 10px; padding: 11px 14px;
+      margin-bottom: 12px; transition: border-color 0.2s;
+    }
+    .social-link-row:focus-within { border-color: var(--green-main); }
+    .social-link-row .s-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .social-link-row input { flex: 1; border: none; outline: none; font-size: 13px; font-family: 'Poppins', sans-serif; color: var(--gray-dark); background: transparent; }
+    .social-link-row input::placeholder { color: #9aab9a; }
+
+    /* ── PASSWORD STRENGTH ── */
+    .strength-bar { height: 4px; border-radius: 2px; background: var(--gray-border); margin-top: 8px; overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.4s, background 0.4s; }
+    .strength-text { font-size: 11px; font-weight: 600; margin-top: 5px; }
+
+    /* ── NOTIFICATION TOGGLES ── */
+    .notif-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 1px solid var(--gray-border);
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-left h4  { font-size: 14px; font-weight: 600; color: var(--gray-dark); }
+    .notif-left p   { font-size: 12px; color: var(--gray-text); margin-top: 3px; }
+    /* Toggle switch */
+    .toggle { position: relative; width: 46px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; border-radius: 24px;
+      background: var(--gray-border); cursor: pointer; transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: white; left: 3px; top: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider { background: var(--green-main); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+    /* ── PRIVACY OPTIONS ── */
+    .privacy-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px; border: 2px solid var(--gray-border);
+      border-radius: 11px; margin-bottom: 12px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .privacy-item:hover { border-color: var(--green-main); background: var(--green-pale); }
+    .privacy-item.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .privacy-item input[type="radio"] { accent-color: var(--green-main); margin-top: 2px; flex-shrink: 0; }
+    .privacy-item h4 { font-size: 13px; font-weight: 700; color: var(--green-dark); }
+    .privacy-item p  { font-size: 12px; color: var(--gray-text); margin-top: 3px; }
+
+    /* ── DANGER ZONE ── */
+    .danger-zone {
+      border: 2px solid #ffcdd2; border-radius: 14px;
+      overflow: hidden; margin-top: 8px;
+    }
+    .danger-head {
+      background: #ffebee; padding: 16px 20px;
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 14px; color: #c62828;
+    }
+    .danger-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-top: 1px solid #ffcdd2;
+      background: white;
+    }
+    .danger-item h4 { font-size: 14px; font-weight: 600; color: var(--gray-dark); }
+    .danger-item p  { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+
+    /* ── SAVE BUTTON ROW ── */
+    .save-row {
+      display: flex; align-items: center; gap: 12px;
+      padding-top: 20px; border-top: 2px solid var(--gray-border);
+      margin-top: 8px;
+    }
+    .save-indicator {
+      font-size: 12px; color: var(--green-main); font-weight: 600;
+      display: none; align-items: center; gap: 6px;
+    }
+    .save-indicator.show { display: flex; }
+
+    /* ── LANGUAGE / TIMEZONE SELECT ── */
+    .pref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+    .theme-options { display: flex; gap: 12px; margin-bottom: 24px; }
+    .theme-opt {
+      flex: 1; padding: 14px; border: 2px solid var(--gray-border);
+      border-radius: 11px; cursor: pointer; text-align: center;
+      transition: all 0.2s;
+    }
+    .theme-opt.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .theme-opt i    { font-size: 22px; display: block; margin-bottom: 7px; color: var(--green-dark); }
+    .theme-opt span { font-size: 13px; font-weight: 600; color: var(--green-dark); }
+
+    /* ── BILLING ── */
+    .plan-card {
+      border: 2px solid var(--green-main); border-radius: 14px;
+      padding: 22px; margin-bottom: 18px; background: var(--green-pale);
+    }
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-main); color: white;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .plan-name  { font-size: 22px; font-weight: 800; color: var(--green-dark); }
+    .plan-price { font-size: 14px; color: var(--gray-text); margin-top: 4px; }
+    .plan-features { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+    .plan-feat { font-size: 13px; color: var(--gray-dark); display: flex; gap: 8px; align-items: center; }
+    .plan-feat i { color: var(--green-main); font-size: 12px; }
+
+    .billing-history { border: 1px solid var(--gray-border); border-radius: 11px; overflow: hidden; }
+    .bh-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 18px; border-bottom: 1px solid var(--gray-border);
+      font-size: 13px;
+    }
+    .bh-row:last-child { border-bottom: none; }
+    .bh-date  { color: var(--gray-text); width: 90px; flex-shrink: 0; }
+    .bh-desc  { flex: 1; font-weight: 500; color: var(--gray-dark); }
+    .bh-amt   { font-weight: 700; color: var(--green-dark); }
+    .bh-badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; }
+
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a>
+  <div class="navbar-right">
+    <a href="all-courses.html" class="btn btn-outline">Browse</a>
+    <a href="profile.html"     class="btn btn-primary">Account</a>
+  </div>
+</nav>
+
+<div class="page-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-avatar">A</div>
+      <div class="sidebar-name"   id="sb-name">Alex Johnson</div>
+      <div class="sidebar-role"   id="sb-role">Student • Pro</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-section-label">Main</li>
+      <li><a href="dashboard.html">    <i class="fas fa-home"></i>Dashboard</a></li>
+      <li><a href="my-courses.html">   <i class="fas fa-book-open"></i>My Courses</a></li>
+      <li><a href="all-courses.html">  <i class="fas fa-th-large"></i>All Courses</a></li>
+      <li><a href="assessment.html">   <i class="fas fa-tasks"></i>Assessments</a></li>
+      <li class="menu-section-label">Learning</li>
+      <li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+      <li><a href="quiz.html">         <i class="fas fa-question-circle"></i>Quizzes</a></li>
+      <li class="menu-section-label">Account</li>
+      <li><a href="profile.html">          <i class="fas fa-user"></i>Profile</a></li>
+      <li><a href="edit-profile.html" class="active"><i class="fas fa-cog"></i>Settings</a></li>
+      <li><a href="admin-dashboard.html">  <i class="fas fa-shield-alt"></i>Admin</a></li>
+      <li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1>Edit Profile &amp; Settings</h1>
+        <p>Manage your account, preferences and security</p>
+      </div>
+      <a href="profile.html" class="btn btn-outline"><i class="fas fa-eye"></i> View Profile</a>
+    </div>
+
+    <div class="ep-layout">
+
+      <!-- ============================
+           LEFT — Settings Navigation
+           ============================ -->
+      <div class="settings-nav">
+        <button class="snav-item active" onclick="showSection('personal', this)">
+          <i class="fas fa-user"></i> Personal Info
+        </button>
+        <button class="snav-item" onclick="showSection('photo', this)">
+          <i class="fas fa-camera"></i> Profile Photo
+        </button>
+        <button class="snav-item" onclick="showSection('social', this)">
+          <i class="fas fa-share-alt"></i> Social Links
+        </button>
+        <button class="snav-item" onclick="showSection('password', this)">
+          <i class="fas fa-lock"></i> Password
+        </button>
+        <button class="snav-item" onclick="showSection('notifications', this)">
+          <i class="fas fa-bell"></i> Notifications
+        </button>
+        <button class="snav-item" onclick="showSection('privacy', this)">
+          <i class="fas fa-shield-alt"></i> Privacy
+        </button>
+        <button class="snav-item" onclick="showSection('preferences', this)">
+          <i class="fas fa-sliders-h"></i> Preferences
+        </button>
+        <button class="snav-item" onclick="showSection('billing', this)">
+          <i class="fas fa-credit-card"></i> Billing
+        </button>
+        <div class="snav-divider"></div>
+        <button class="snav-item danger" onclick="showSection('danger', this)">
+          <i class="fas fa-exclamation-triangle"></i> Danger Zone
+        </button>
+      </div>
+
+
+      <!-- ============================
+           RIGHT — Section Panels
+           ============================ -->
+      <div>
+
+        <!-- ── SECTION 1: PERSONAL INFO ── -->
+        <div class="ep-section active card" id="sec-personal">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-user"></i></div>
+            <div>
+              <h2>Personal Information</h2>
+              <p>Update your name, bio, contact details and more</p>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="fg">
+              <label>First Name <span class="req">*</span></label>
+              <div class="iw"><i class="fas fa-user il"></i>
+                <input type="text" id="inp-fname" placeholder="First name" oninput="markChanged(this)"/>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Last Name <span class="req">*</span></label>
+              <div class="iw"><i class="fas fa-user il"></i>
+                <input type="text" id="inp-lname" placeholder="Last name" oninput="markChanged(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>Email Address <span class="req">*</span></label>
+            <div class="iw"><i class="fas fa-envelope il"></i>
+              <input type="email" id="inp-email" placeholder="you@example.com" oninput="markChanged(this)"/>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="fg">
+              <label>Phone Number</label>
+              <div class="iw"><i class="fas fa-phone il"></i>
+                <input type="tel" id="inp-phone" placeholder="+91 98765 43210" oninput="markChanged(this)"/>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Date of Birth</label>
+              <div class="iw"><i class="fas fa-calendar il"></i>
+                <input type="date" id="inp-dob" oninput="markChanged(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>Bio</label>
+            <textarea class="form-ta" id="inp-bio" maxlength="200" placeholder="Tell the community about yourself..." oninput="updateCharCount(this,200,'bio-count')"></textarea>
+            <div class="char-count"><span id="bio-count">0</span>/200 characters</div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="fg">
+              <label>Location / City</label>
+              <div class="iw"><i class="fas fa-map-marker-alt il"></i>
+                <input type="text" id="inp-location" placeholder="e.g. Nagpur, Maharashtra" oninput="markChanged(this)"/>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Website / Portfolio</label>
+              <div class="iw"><i class="fas fa-globe il"></i>
+                <input type="url" id="inp-website" placeholder="https://yoursite.com" oninput="markChanged(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>Profession / Title</label>
+            <div class="iw"><i class="fas fa-briefcase il"></i>
+              <input type="text" id="inp-title" placeholder="e.g. Full Stack Developer, Student" oninput="markChanged(this)"/>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="fg">
+              <label>Language</label>
+              <div class="iw"><i class="fas fa-language il"></i>
+                <select id="inp-lang" onchange="markChanged(this)">
+                  <option value="en">English</option>
+                  <option value="hi">Hindi</option>
+                  <option value="mr">Marathi</option>
+                  <option value="ta">Tamil</option>
+                  <option value="te">Telugu</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                  <option value="ar">Arabic</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Gender</label>
+              <div class="iw"><i class="fas fa-venus-mars il"></i>
+                <select id="inp-gender" onchange="markChanged(this)">
+                  <option value="">Prefer not to say</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="savePersonal()">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+            <button class="btn btn-outline" onclick="loadUserData()">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+            <div class="save-indicator" id="personal-saved">
+              <i class="fas fa-check-circle"></i> Saved successfully!
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 2: PROFILE PHOTO ── -->
+        <div class="ep-section card" id="sec-photo">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-camera"></i></div>
+            <div>
+              <h2>Profile Photo</h2>
+              <p>Upload a photo or choose an avatar</p>
+            </div>
+          </div>
+
+          <!-- Photo preview + upload -->
+          <div class="photo-area">
+            <div class="photo-preview" id="photo-preview" onclick="document.getElementById('photo-input').click()">
+              <span id="photo-initials">A</span>
+              <div class="photo-overlay"><i class="fas fa-camera"></i></div>
+            </div>
+            <div class="photo-actions">
+              <h3>Profile Picture</h3>
+              <p>
+                Upload a JPG, PNG or GIF (max 5 MB).<br/>
+                Recommended size: 400 × 400 pixels.<br/>
+                Square images look best.
+              </p>
+              <div class="photo-btn-row">
+                <button class="btn btn-primary" onclick="document.getElementById('photo-input').click()">
+                  <i class="fas fa-upload"></i> Upload Photo
+                </button>
+                <button class="btn btn-outline" onclick="removePhoto()">
+                  <i class="fas fa-trash"></i> Remove
+                </button>
+              </div>
+            </div>
+            <!-- Hidden file input — accepts images only -->
+            <input type="file" id="photo-input" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handlePhotoUpload(this)"/>
+          </div>
+
+          <!-- Avatar picker (emoji-based) -->
+          <div class="fg">
+            <label>Or choose a default avatar</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;" id="avatar-picker">
+              <div class="av-opt" data-color="#2d8c4e,#5dd880"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#2d8c4e,#5dd880);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">😊</div>
+              <div class="av-opt" data-color="#1565c0,#42a5f5"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#1565c0,#42a5f5);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">🎓</div>
+              <div class="av-opt" data-color="#c62828,#ef5350"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#c62828,#ef5350);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">🚀</div>
+              <div class="av-opt" data-color="#f57c00,#ffb74d"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#f57c00,#ffb74d);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">⚡</div>
+              <div class="av-opt" data-color="#6d28d9,#a78bfa"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#6d28d9,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">🌟</div>
+              <div class="av-opt" data-color="#00796b,#4db6ac"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#00796b,#4db6ac);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">💡</div>
+              <div class="av-opt" data-color="#37474f,#78909c"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#37474f,#78909c);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">🎯</div>
+              <div class="av-opt" data-color="#1a237e,#5c6bc0"  onclick="pickAvatar(this)" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#1a237e,#5c6bc0);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:3px solid transparent;transition:all 0.2s;">💻</div>
+            </div>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="savePhoto()">
+              <i class="fas fa-save"></i> Save Photo
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 3: SOCIAL LINKS ── -->
+        <div class="ep-section card" id="sec-social">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-share-alt"></i></div>
+            <div>
+              <h2>Social Links</h2>
+              <p>Connect your social profiles to your account</p>
+            </div>
+          </div>
+
+          <div class="social-link-row">
+            <div class="s-icon" style="background:#0077b5;"><i class="fab fa-linkedin" style="color:white;"></i></div>
+            <input type="url" id="soc-linkedin" placeholder="https://linkedin.com/in/yourname"/>
+          </div>
+          <div class="social-link-row">
+            <div class="s-icon" style="background:#333;"><i class="fab fa-github" style="color:white;"></i></div>
+            <input type="url" id="soc-github" placeholder="https://github.com/yourname"/>
+          </div>
+          <div class="social-link-row">
+            <div class="s-icon" style="background:#1da1f2;"><i class="fab fa-twitter" style="color:white;"></i></div>
+            <input type="url" id="soc-twitter" placeholder="https://twitter.com/yourhandle"/>
+          </div>
+          <div class="social-link-row">
+            <div class="s-icon" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);"><i class="fab fa-instagram" style="color:white;"></i></div>
+            <input type="url" id="soc-instagram" placeholder="https://instagram.com/yourhandle"/>
+          </div>
+          <div class="social-link-row">
+            <div class="s-icon" style="background:#ff0000;"><i class="fab fa-youtube" style="color:white;"></i></div>
+            <input type="url" id="soc-youtube" placeholder="https://youtube.com/@yourchannel"/>
+          </div>
+          <div class="social-link-row">
+            <div class="s-icon" style="background:#0a66c2;"><i class="fas fa-globe" style="color:white;"></i></div>
+            <input type="url" id="soc-website" placeholder="https://yourportfolio.com"/>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="saveSocial()">
+              <i class="fas fa-save"></i> Save Social Links
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 4: PASSWORD ── -->
+        <div class="ep-section card" id="sec-password">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-lock"></i></div>
+            <div>
+              <h2>Change Password</h2>
+              <p>Keep your account secure with a strong password</p>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>Current Password <span class="req">*</span></label>
+            <div class="iw">
+              <i class="fas fa-lock il"></i>
+              <input type="password" id="pw-current" placeholder="Enter current password"/>
+            </div>
+          </div>
+          <div class="fg">
+            <label>New Password <span class="req">*</span></label>
+            <div class="iw">
+              <i class="fas fa-lock il"></i>
+              <input type="password" id="pw-new" placeholder="Minimum 8 characters" oninput="checkStrength(this.value)"/>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div class="strength-text" id="strength-text" style="color:#9aab9a;">Enter a password</div>
+          </div>
+          <div class="fg">
+            <label>Confirm New Password <span class="req">*</span></label>
+            <div class="iw">
+              <i class="fas fa-lock il"></i>
+              <input type="password" id="pw-confirm" placeholder="Repeat new password"/>
+            </div>
+          </div>
+
+          <div style="background:var(--green-pale);border-radius:10px;padding:14px 18px;margin-bottom:20px;">
+            <p style="font-size:13px;font-weight:600;color:var(--green-dark);margin-bottom:8px;">Password must contain:</p>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="pw-rule" id="r-len"><i class="fas fa-circle" style="font-size:8px;color:#9aab9a;"></i> <span style="font-size:12px;color:var(--gray-text);">At least 8 characters</span></div>
+              <div class="pw-rule" id="r-upper"><i class="fas fa-circle" style="font-size:8px;color:#9aab9a;"></i> <span style="font-size:12px;color:var(--gray-text);">One uppercase letter (A-Z)</span></div>
+              <div class="pw-rule" id="r-num"><i class="fas fa-circle" style="font-size:8px;color:#9aab9a;"></i> <span style="font-size:12px;color:var(--gray-text);">One number (0-9)</span></div>
+              <div class="pw-rule" id="r-special"><i class="fas fa-circle" style="font-size:8px;color:#9aab9a;"></i> <span style="font-size:12px;color:var(--gray-text);">One special character (!@#$...)</span></div>
+            </div>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="savePassword()">
+              <i class="fas fa-shield-alt"></i> Update Password
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 5: NOTIFICATIONS ── -->
+        <div class="ep-section card" id="sec-notifications">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-bell"></i></div>
+            <div>
+              <h2>Notification Settings</h2>
+              <p>Control what emails and alerts you receive</p>
+            </div>
+          </div>
+
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Course Updates</h4>
+              <p>New lessons, content updates and course announcements</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Quiz &amp; Assignment Reminders</h4>
+              <p>Alerts before quiz deadlines and assignment due dates</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Certificate Ready</h4>
+              <p>Notification when your certificate is ready to download</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>New Course Recommendations</h4>
+              <p>Personalized course suggestions based on your learning</p>
+            </div>
+            <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Promotional Offers</h4>
+              <p>Discounts, sale announcements and special deals</p>
+            </div>
+            <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Weekly Progress Report</h4>
+              <p>Summary of your learning activity every Monday</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left">
+              <h4>Streak Reminders</h4>
+              <p>Daily reminder to keep your learning streak going</p>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="showToast('Notification settings saved!')">
+              <i class="fas fa-save"></i> Save Preferences
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 6: PRIVACY ── -->
+        <div class="ep-section card" id="sec-privacy">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+              <h2>Privacy Settings</h2>
+              <p>Control who can see your profile and activity</p>
+            </div>
+          </div>
+
+          <label style="font-size:13px;font-weight:600;color:var(--gray-text);display:block;margin-bottom:12px;">Profile Visibility</label>
+          <div class="privacy-item selected" onclick="selectPrivacy(this)">
+            <input type="radio" name="visibility" value="public" checked/>
+            <div><h4>🌍 Public</h4><p>Anyone can see your profile, courses and achievements</p></div>
+          </div>
+          <div class="privacy-item" onclick="selectPrivacy(this)">
+            <input type="radio" name="visibility" value="members"/>
+            <div><h4>👥 Members Only</h4><p>Only registered LearnGreen members can view your profile</p></div>
+          </div>
+          <div class="privacy-item" onclick="selectPrivacy(this)">
+            <input type="radio" name="visibility" value="private"/>
+            <div><h4>🔒 Private</h4><p>Only you can see your profile and activity</p></div>
+          </div>
+
+          <div style="margin-top:22px;">
+            <label style="font-size:13px;font-weight:600;color:var(--gray-text);display:block;margin-bottom:12px;">Additional Privacy Options</label>
+            <div class="notif-item">
+              <div class="notif-left"><h4>Show my courses on profile</h4><p>Others can see which courses you are enrolled in</p></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div class="notif-left"><h4>Show my certificates</h4><p>Display earned certificates on your public profile</p></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div class="notif-left"><h4>Show learning activity</h4><p>Display recent lessons completed on profile</p></div>
+              <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="showToast('Privacy settings saved!')">
+              <i class="fas fa-save"></i> Save Privacy Settings
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 7: PREFERENCES ── -->
+        <div class="ep-section card" id="sec-preferences">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-sliders-h"></i></div>
+            <div>
+              <h2>Preferences</h2>
+              <p>Customize your learning experience</p>
+            </div>
+          </div>
+
+          <label style="font-size:13px;font-weight:600;color:var(--gray-text);display:block;margin-bottom:12px;">Theme</label>
+          <div class="theme-options">
+            <div class="theme-opt selected" onclick="pickTheme(this,'light')">
+              <i class="fas fa-sun"></i><span>Light</span>
+            </div>
+            <div class="theme-opt" onclick="pickTheme(this,'dark')">
+              <i class="fas fa-moon"></i><span>Dark</span>
+            </div>
+            <div class="theme-opt" onclick="pickTheme(this,'auto')">
+              <i class="fas fa-adjust"></i><span>Auto (System)</span>
+            </div>
+          </div>
+
+          <div class="pref-grid">
+            <div class="fg">
+              <label>Interface Language</label>
+              <div class="iw"><i class="fas fa-language il"></i>
+                <select>
+                  <option>English</option><option>Hindi</option><option>Marathi</option>
+                  <option>Tamil</option><option>Telugu</option><option>Spanish</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Time Zone</label>
+              <div class="iw"><i class="fas fa-clock il"></i>
+                <select>
+                  <option>Asia/Kolkata (IST, UTC+5:30)</option>
+                  <option>America/New_York (EST)</option>
+                  <option>Europe/London (GMT)</option>
+                  <option>America/Los_Angeles (PST)</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Video Playback Speed</label>
+              <div class="iw"><i class="fas fa-tachometer-alt il"></i>
+                <select>
+                  <option>0.75x</option><option>1.0x (Normal)</option>
+                  <option>1.25x</option><option>1.5x</option><option>2.0x</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Video Quality</label>
+              <div class="iw"><i class="fas fa-video il"></i>
+                <select><option>Auto</option><option>1080p HD</option><option>720p</option><option>480p</option></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="notif-item">
+            <div class="notif-left"><h4>Auto-play next lesson</h4><p>Automatically start the next lesson when current one finishes</p></div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="notif-item">
+            <div class="notif-left"><h4>Show subtitles by default</h4><p>Enable closed captions on all video lessons</p></div>
+            <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn-primary" onclick="showToast('Preferences saved!')">
+              <i class="fas fa-save"></i> Save Preferences
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 8: BILLING ── -->
+        <div class="ep-section card" id="sec-billing">
+          <div class="section-hd">
+            <div class="section-hd-icon"><i class="fas fa-credit-card"></i></div>
+            <div>
+              <h2>Billing &amp; Subscription</h2>
+              <p>Manage your plan and payment history</p>
+            </div>
+          </div>
+
+          <div class="plan-card">
+            <div class="plan-badge"><i class="fas fa-crown"></i> Current Plan</div>
+            <div class="plan-name">Pro Plan</div>
+            <div class="plan-price">₹499 / month &nbsp;•&nbsp; Renews on Apr 5, 2026</div>
+            <div class="plan-features">
+              <div class="plan-feat"><i class="fas fa-check"></i> Unlimited course access</div>
+              <div class="plan-feat"><i class="fas fa-check"></i> Verified certificates</div>
+              <div class="plan-feat"><i class="fas fa-check"></i> Offline download</div>
+              <div class="plan-feat"><i class="fas fa-check"></i> Priority support</div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px;">
+              <button class="btn btn-outline btn-sm" onclick="showToast('Redirecting to upgrade page...')">
+                <i class="fas fa-arrow-up"></i> Upgrade to Annual
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="showToast('Cancellation request sent')">
+                Cancel Plan
+              </button>
+            </div>
+          </div>
+
+          <div class="card-title" style="margin-bottom:12px;">Payment History</div>
+          <div class="billing-history">
+            <div class="bh-row"><span class="bh-date">Mar 5, 2026</span><span class="bh-desc">Pro Plan — Monthly</span><span class="bh-amt">₹499</span><span class="bh-badge status-active">Paid</span></div>
+            <div class="bh-row"><span class="bh-date">Feb 5, 2026</span><span class="bh-desc">Pro Plan — Monthly</span><span class="bh-amt">₹499</span><span class="bh-badge status-active">Paid</span></div>
+            <div class="bh-row"><span class="bh-date">Jan 5, 2026</span><span class="bh-desc">Pro Plan — Monthly</span><span class="bh-amt">₹499</span><span class="bh-badge status-active">Paid</span></div>
+            <div class="bh-row"><span class="bh-date">Dec 10, 2025</span><span class="bh-desc">Python Bootcamp — One-time</span><span class="bh-amt">₹999</span><span class="bh-badge status-active">Paid</span></div>
+          </div>
+        </div>
+
+
+        <!-- ── SECTION 9: DANGER ZONE ── -->
+        <div class="ep-section card" id="sec-danger">
+          <div class="section-hd">
+            <div class="section-hd-icon" style="background:#ffebee;color:#c62828;"><i class="fas fa-exclamation-triangle"></i></div>
+            <div>
+              <h2 style="color:#c62828;">Danger Zone</h2>
+              <p>Irreversible actions — please read carefully before proceeding</p>
+            </div>
+          </div>
+
+          <div class="danger-zone">
+            <div class="danger-head"><i class="fas fa-exclamation-triangle"></i> These actions cannot be undone</div>
+            <div class="danger-item">
+              <div>
+                <h4>Export My Data</h4>
+                <p>Download all your account data, course progress and certificates</p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Export started — email will be sent in 5 minutes')">
+                <i class="fas fa-download"></i> Export
+              </button>
+            </div>
+            <div class="danger-item">
+              <div>
+                <h4>Deactivate Account</h4>
+                <p>Temporarily hide your profile — you can reactivate anytime</p>
+              </div>
+              <button class="btn btn-sm" style="background:#fff3e0;color:#e65100;" onclick="showToast('Account deactivation request sent')">
+                <i class="fas fa-pause-circle"></i> Deactivate
+              </button>
+            </div>
+            <div class="danger-item">
+              <div>
+                <h4>Delete Account</h4>
+                <p>Permanently delete your account, all progress and certificates forever</p>
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
+                <i class="fas fa-trash"></i> Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /right panels -->
+    </div><!-- /ep-layout -->
+  </main>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+
+/* ============================================================
+   SECTION SWITCHER
+   ============================================================ */
+function showSection(id, btn) {
+  // Hide all sections
+  document.querySelectorAll('.ep-section').forEach(s => s.classList.remove('active'));
+  // Remove active from all nav buttons
+  document.querySelectorAll('.snav-item').forEach(b => b.classList.remove('active'));
+  // Show selected section
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  // Mark nav button active
+  if (btn) btn.classList.add('active');
+}
+
+/* ============================================================
+   LOAD USER DATA — fills all form fields from localStorage
+   ============================================================ */
+function loadUserData() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+
+  // Personal info fields
+  setVal('inp-fname',    user.firstName  || '');
+  setVal('inp-lname',    user.lastName   || '');
+  setVal('inp-email',    user.email      || '');
+  setVal('inp-phone',    user.phone      || '');
+  setVal('inp-bio',      user.bio        || '');
+  setVal('inp-location', user.location   || '');
+  setVal('inp-website',  user.website    || '');
+  setVal('inp-title',    user.title      || '');
+  setVal('inp-lang',     user.lang       || 'en');
+  setVal('inp-gender',   user.gender     || '');
+
+  // Social links
+  setVal('soc-linkedin',  user.linkedin  || '');
+  setVal('soc-github',    user.github    || '');
+  setVal('soc-twitter',   user.twitter   || '');
+  setVal('soc-instagram', user.instagram || '');
+  setVal('soc-youtube',   user.youtube   || '');
+  setVal('soc-website',   user.website   || '');
+
+  // Bio char count
+  const bio = document.getElementById('inp-bio');
+  if (bio) updateCharCount(bio, 200, 'bio-count');
+
+  // Sidebar + photo preview
+  const fullName = ((user.firstName||'') + ' ' + (user.lastName||'')).trim() || 'Alex Johnson';
+  const initial  = fullName.charAt(0).toUpperCase();
+  setTxt('sb-name',      fullName);
+  setTxt('sb-role',      (user.role||'Student') + (user.plan ? ' • ' + user.plan : ''));
+  setTxt('sb-avatar',    initial);
+  setTxt('photo-initials', initial);
+
+  // If saved photo exists, show it
+  if (user.photoData) {
+    const preview = document.getElementById('photo-preview');
+    preview.innerHTML = `<img src="${user.photoData}" alt="Profile Photo"/><div class="photo-overlay"><i class="fas fa-camera"></i></div>`;
+  }
+}
+
+/* helpers */
+function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+function setTxt(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
+
+/* ============================================================
+   SAVE PERSONAL INFO
+   ============================================================ */
+function savePersonal() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+
+  user.firstName = document.getElementById('inp-fname').value.trim();
+  user.lastName  = document.getElementById('inp-lname').value.trim();
+  user.email     = document.getElementById('inp-email').value.trim();
+  user.phone     = document.getElementById('inp-phone').value.trim();
+  user.bio       = document.getElementById('inp-bio').value.trim();
+  user.location  = document.getElementById('inp-location').value.trim();
+  user.website   = document.getElementById('inp-website').value.trim();
+  user.title     = document.getElementById('inp-title').value.trim();
+  user.lang      = document.getElementById('inp-lang').value;
+  user.gender    = document.getElementById('inp-gender').value;
+
+  if (!user.firstName || !user.email) {
+    showToast('⚠️ First name and email are required');
+    return;
+  }
+
+  localStorage.setItem('lg_user', JSON.stringify(user));
+  loadUserData(); // refresh sidebar name immediately
+
+  const ind = document.getElementById('personal-saved');
+  if (ind) { ind.classList.add('show'); setTimeout(() => ind.classList.remove('show'), 3000); }
+  showToast('Profile updated! ✓ Changes saved');
+}
+
+/* ============================================================
+   SAVE SOCIAL LINKS
+   ============================================================ */
+function saveSocial() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+
+  user.linkedin  = document.getElementById('soc-linkedin').value.trim();
+  user.github    = document.getElementById('soc-github').value.trim();
+  user.twitter   = document.getElementById('soc-twitter').value.trim();
+  user.instagram = document.getElementById('soc-instagram').value.trim();
+  user.youtube   = document.getElementById('soc-youtube').value.trim();
+
+  localStorage.setItem('lg_user', JSON.stringify(user));
+  showToast('Social links saved! ✓');
+}
+
+/* ============================================================
+   PHOTO UPLOAD — reads image file, stores as base64
+   ============================================================ */
+function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Max 5MB check
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('⚠️ File too large. Max size is 5 MB');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    // Show preview immediately
+    const preview = document.getElementById('photo-preview');
+    preview.innerHTML = `<img src="${dataUrl}" alt="Profile Photo"/><div class="photo-overlay"><i class="fas fa-camera"></i></div>`;
+    // Store temporarily (saved when user clicks "Save Photo")
+    preview.dataset.pending = dataUrl;
+    showToast('Photo loaded! Click "Save Photo" to confirm ✓');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Save photo button */
+function savePhoto() {
+  const preview = document.getElementById('photo-preview');
+  const dataUrl = preview.dataset.pending || '';
+
+  if (!dataUrl) {
+    showToast('No new photo selected');
+    return;
+  }
+
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+  user.photoData = dataUrl;
+  localStorage.setItem('lg_user', JSON.stringify(user));
+  delete preview.dataset.pending;
+  showToast('Profile photo saved! ✓');
+}
+
+/* Remove photo */
+function removePhoto() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+  delete user.photoData;
+  localStorage.setItem('lg_user', JSON.stringify(user));
+
+  const initial = ((user.firstName||'A').charAt(0)).toUpperCase();
+  const preview = document.getElementById('photo-preview');
+  preview.innerHTML = `<span id="photo-initials">${initial}</span><div class="photo-overlay"><i class="fas fa-camera"></i></div>`;
+  showToast('Photo removed');
+}
+
+/* Pick avatar emoji */
+function pickAvatar(el) {
+  document.querySelectorAll('.av-opt').forEach(a => a.style.border = '3px solid transparent');
+  el.style.border = '3px solid var(--green-dark)';
+  const emoji = el.textContent.trim();
+  const preview = document.getElementById('photo-preview');
+  preview.innerHTML = `<span style="font-size:44px;">${emoji}</span><div class="photo-overlay"><i class="fas fa-camera"></i></div>`;
+  showToast('Avatar selected! Click "Save Photo" to confirm ✓');
+  preview.dataset.pending = 'avatar:' + emoji;
+}
+
+/* ============================================================
+   PASSWORD STRENGTH CHECKER
+   ============================================================ */
+function checkStrength(pw) {
+  const hasLen     = pw.length >= 8;
+  const hasUpper   = /[A-Z]/.test(pw);
+  const hasNum     = /[0-9]/.test(pw);
+  const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw);
+
+  const score = [hasLen, hasUpper, hasNum, hasSpecial].filter(Boolean).length;
+
+  const fill = document.getElementById('strength-fill');
+  const text = document.getElementById('strength-text');
+
+  const levels = [
+    { w:'0%',   c:'#e0e7e0', t:'Enter a password' },
+    { w:'25%',  c:'#e53935', t:'Weak' },
+    { w:'50%',  c:'#ff9800', t:'Fair' },
+    { w:'75%',  c:'#fdd835', t:'Good' },
+    { w:'100%', c:'#2d8c4e', t:'Strong ✓' }
+  ];
+  const l = levels[score];
+  fill.style.width      = l.w;
+  fill.style.background = l.c;
+  text.textContent = l.t;
+  text.style.color  = l.c;
+
+  // Tick rules
+  tickRule('r-len',     hasLen);
+  tickRule('r-upper',   hasUpper);
+  tickRule('r-num',     hasNum);
+  tickRule('r-special', hasSpecial);
+}
+
+function tickRule(id, pass) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const icon = el.querySelector('i');
+  const txt  = el.querySelector('span');
+  if (pass) {
+    icon.style.color = 'var(--green-main)';
+    icon.className   = 'fas fa-check-circle';
+    txt.style.color  = 'var(--green-dark)';
+  } else {
+    icon.style.color = '#9aab9a';
+    icon.className   = 'fas fa-circle';
+    txt.style.color  = 'var(--gray-text)';
+  }
+}
+
+function savePassword() {
+  const cur  = document.getElementById('pw-current').value;
+  const nw   = document.getElementById('pw-new').value;
+  const conf = document.getElementById('pw-confirm').value;
+
+  if (!cur)       { showToast('⚠️ Enter your current password'); return; }
+  if (!nw)        { showToast('⚠️ Enter a new password'); return; }
+  if (nw !== conf){ showToast('⚠️ New passwords do not match'); return; }
+  if (nw.length < 8){ showToast('⚠️ Password must be at least 8 characters'); return; }
+
+  showToast('Password updated successfully! 🔐');
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value     = '';
+  document.getElementById('pw-confirm').value = '';
+  checkStrength('');
+}
+
+/* ============================================================
+   PRIVACY
+   ============================================================ */
+function selectPrivacy(item) {
+  document.querySelectorAll('.privacy-item').forEach(i => i.classList.remove('selected'));
+  item.classList.add('selected');
+  const radio = item.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+}
+
+/* ============================================================
+   THEME PICKER
+   ============================================================ */
+function pickTheme(el, theme) {
+  document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  showToast('Theme set to: ' + theme.charAt(0).toUpperCase() + theme.slice(1));
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function markChanged(el) { el.classList.add('changed'); }
+
+function updateCharCount(ta, max, countId) {
+  const cnt = document.getElementById(countId);
+  if (cnt) cnt.textContent = ta.value.length;
+}
+
+function confirmDelete() {
+  if (confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) {
+    localStorage.removeItem('lg_user');
+    showToast('Account deleted. Redirecting...');
+    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', loadUserData);
+
+</script>
+</body>
+</html>

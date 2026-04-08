@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+
+    /* ===== ADMIN SIDEBAR ===== */
+    .sidebar { background: #0f1e10; }
+
+    /* ===== TOP ADMIN BAR ===== */
+    .admin-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .admin-topbar-left h1 { font-size: 24px; font-weight: 800; color: var(--green-dark); }
+    .admin-topbar-left p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+    .admin-topbar-right   { display: flex; gap: 10px; align-items: center; }
+
+    /* ===== STAT CARDS GRID ===== */
+    .admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 22px; }
+    .astat {
+      background: #fff; border-radius: 14px; padding: 20px;
+      box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px;
+      transition: all .22s; position: relative; overflow: hidden;
+      border-left: 4px solid var(--green-main);
+    }
+    .astat:nth-child(2) { border-left-color: #1976d2; }
+    .astat:nth-child(3) { border-left-color: #f57c00; }
+    .astat:nth-child(4) { border-left-color: #7c3aed; }
+    .astat:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .astat-icon { width: 50px; height: 50px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .astat-val  { font-size: 26px; font-weight: 800; color: var(--green-dark); line-height: 1; }
+    .astat-lbl  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .astat-chg  { font-size: 11px; font-weight: 700; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+    .chg-up   { color: #2d8c4e; }
+    .chg-down { color: #e53935; }
+    .astat-mini {
+      position: absolute; right: 16px; top: 16px;
+      font-size: 10px; font-weight: 700; padding: 3px 9px;
+      border-radius: 20px; background: var(--green-pale); color: var(--green-dark);
+    }
+    .astat:nth-child(2) .astat-mini { background: #e3f2fd; color: #1565c0; }
+    .astat:nth-child(3) .astat-mini { background: #fff3e0; color: #e65100; }
+    .astat:nth-child(4) .astat-mini { background: #f3e8fd; color: #6d28d9; }
+
+    /* ===== CHART SECTION ===== */
+    .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 22px; }
+    .chart-card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+    .chart-card-title { font-size: 14px; font-weight: 700; color: var(--green-dark); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .chart-card-title span { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+
+    /* Bar chart */
+    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .bar-fill { width: 100%; border-radius: 6px 6px 0 0; transition: height 1s ease; background: linear-gradient(to top, var(--green-main), var(--green-light)); min-height: 4px; }
+    .bar-lbl  { font-size: 10px; color: var(--text-muted); }
+    .bar-val  { font-size: 10px; font-weight: 700; color: var(--green-dark); }
+
+    /* Donut chart (CSS) */
+    .donut-wrap { position: relative; width: 120px; height: 120px; margin: 0 auto 16px; }
+    .donut-svg  { transform: rotate(-90deg); }
+    .donut-track { fill: none; stroke: var(--border); stroke-width: 18; }
+    .donut-fill  { fill: none; stroke-width: 18; stroke-linecap: round; transition: stroke-dashoffset 1.2s ease; }
+    .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .donut-center big   { display: block; font-size: 22px; font-weight: 800; color: var(--green-dark); line-height: 1; }
+    .donut-center small { font-size: 10px; color: var(--text-muted); }
+    .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+    .dl-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dark); }
+    .dl-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ===== ACTIVITY + QUICK STATS ROW ===== */
+    .mid-row { display: grid; grid-template-columns: 1fr 1fr 320px; gap: 16px; margin-bottom: 22px; }
+
+    /* Recent activity */
+    .act-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .act-item:last-child { border-bottom: none; }
+    .act-dot { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .act-title { font-size: 12px; font-weight: 600; color: var(--text-dark); }
+    .act-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .act-time  { font-size: 11px; color: #9aab9a; margin-left: auto; white-space: nowrap; }
+
+    /* Top courses mini list */
+    .top-course-item { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .top-course-item:last-child { border-bottom: none; }
+    .tc-thumb { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .tc-name  { flex: 1; font-size: 12px; font-weight: 600; color: var(--text-dark); }
+    .tc-val   { font-size: 12px; font-weight: 700; color: var(--green-dark); }
+
+    /* Quick KPI tiles */
+    .kpi-tile { background: var(--green-pale); border-radius: 10px; padding: 13px 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .kpi-tile:last-child { margin-bottom: 0; }
+    .kpi-lbl { font-size: 12px; color: var(--text-muted); }
+    .kpi-val { font-size: 16px; font-weight: 800; color: var(--green-dark); }
+    .kpi-trend { font-size: 11px; font-weight: 700; }
+
+    /* ===== TABLES ===== */
+    .table-wrap { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 22px; }
+    .tw-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .tw-head h3 { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+    .tw-head-right { display: flex; gap: 8px; }
+    table  { width: 100%; border-collapse: collapse; }
+    table th { text-align: left; padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 2px solid var(--border); font-weight: 700; background: var(--bg); }
+    table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    table tr:last-child td { border-bottom: none; }
+    table tr:hover td { background: var(--green-pale); }
+
+    /* ===== STATUS CHIPS ===== */
+    .chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .chip-green  { background: var(--green-pale); color: var(--green-dark); }
+    .chip-blue   { background: #e3f2fd; color: #1565c0; }
+    .chip-orange { background: #fff3e0; color: #e65100; }
+    .chip-red    { background: #ffebee; color: #c62828; }
+    .chip-gray   { background: #f3f4f6; color: #6b7280; }
+    .chip::before { content: '●'; font-size: 8px; }
+
+    /* ===== ACTION BUTTONS ===== */
+    .tbl-btn { padding: 5px 11px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; font-family: 'Poppins', sans-serif; transition: all .18s; }
+    .tb-edit { background: var(--green-pale); color: var(--green-dark); }
+    .tb-edit:hover { background: var(--green-main); color: #fff; }
+    .tb-view { background: #e3f2fd; color: #1565c0; }
+    .tb-view:hover { background: #1565c0; color: #fff; }
+    .tb-del  { background: #ffebee; color: #c62828; }
+    .tb-del:hover  { background: #c62828; color: #fff; }
+    .tb-block { background: #fff3e0; color: #e65100; }
+
+    /* ===== USER ROW AVATAR ===== */
+    .user-cell { display: flex; align-items: center; gap: 10px; }
+    .u-av { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+
+    /* ===== NOTIFICATION PANEL ===== */
+    .notif-panel { background: #fff; border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+    .notif-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .notif-item:last-child { border-bottom: none; }
+    .ni-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .ni-msg  { font-size: 12px; color: var(--text-dark); line-height: 1.5; flex: 1; }
+    .ni-time { font-size: 11px; color: #9aab9a; white-space: nowrap; }
+
+    /* ===== REVENUE CARDS ===== */
+    .rev-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 22px; }
+    .rev-card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: var(--shadow); text-align: center; }
+    .rev-icon { font-size: 32px; margin-bottom: 10px; }
+    .rev-val  { font-size: 22px; font-weight: 800; color: var(--green-dark); }
+    .rev-lbl  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .rev-chg  { font-size: 12px; font-weight: 700; margin-top: 6px; }
+
+    /* ===== SEARCH + FILTERS ===== */
+    .tbl-filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .tbl-search { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 2px solid var(--border); border-radius: 9px; padding: 7px 12px; }
+    .tbl-search input { border: none; outline: none; font-family: 'Poppins', sans-serif; font-size: 12px; background: transparent; width: 160px; }
+    .tbl-search i { color: #9aab9a; font-size: 13px; }
+    .f-sel { padding: 8px 11px; border: 2px solid var(--border); border-radius: 9px; font-size: 12px; font-family: 'Poppins', sans-serif; outline: none; background: #fff; cursor: pointer; }
+    .f-sel:focus { border-color: var(--green-main); }
+
+    /* ===== TABS ===== */
+    .dash-tabs { display: flex; gap: 4px; margin-bottom: 22px; background: #fff; border-radius: 12px; padding: 6px; box-shadow: var(--shadow); }
+    .dash-tab { flex: 1; padding: 10px 12px; border-radius: 9px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; color: var(--text-muted); background: transparent; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+    .dash-tab.active { background: var(--green-main); color: #fff; }
+    .dash-tab:hover:not(.active) { background: var(--green-pale); color: var(--green-dark); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ===== MINI PROGRESS BAR ===== */
+    .mini-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; width: 80px; }
+    .mini-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green-main), var(--green-light)); }
+
+    /* ===== ANNOUNCEMENT STRIP ===== */
+    .announce { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fff3e0, #fff8f0); border: 1px solid #ffe0b2; border-radius: 12px; padding: 12px 18px; margin-bottom: 18px; }
+    .announce i { color: #f57c00; font-size: 18px; flex-shrink: 0; }
+    .announce p { font-size: 13px; color: #5d4037; flex: 1; }
+    .announce p b { color: #e65100; }
+    .announce-x { color: #bcaaa4; cursor: pointer; font-size: 17px; }
+    .announce-x:hover { color: #5d4037; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    .fu  { animation: fadeUp .4s ease both; }
+    .fu1 { animation: fadeUp .4s .07s ease both; }
+    .fu2 { animation: fadeUp .4s .14s ease both; }
+    .fu3 { animation: fadeUp .4s .21s ease both; }
+    .fu4 { animation: fadeUp .4s .28s ease both; }
+
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="navbar">
+  <a class="navbar-logo" href="dashboard.html">
+    <div class="logo-box">🎓</div>Learn<span>Green</span>
+  </a>
+  <div class="navbar-right" style="gap:8px;">
+    <div style="font-size:12px;color:var(--text-muted);padding:7px 12px;background:var(--green-pale);border-radius:8px;font-weight:600;">
+      <i class="fas fa-shield-alt" style="color:var(--green-main);"></i> Admin Mode
+    </div>
+    <button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);position:relative;" onclick="showToast('5 new admin notifications 🔔')">
+      <i class="fas fa-bell"></i>
+      <span style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#e53935;border-radius:50%;font-size:9px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">5</span>
+    </button>
+    <a href="dashboard.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Site</a>
+    <a href="profile.html"   class="btn btn-primary btn-sm"><i class="fas fa-user"></i> Admin</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     PAGE LAYOUT
+     ============================================================ -->
+<div class="page-layout">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" style="background:linear-gradient(135deg,#c62828,#ef5350);">👑</div>
+      <div class="sidebar-name">Admin Panel</div>
+      <div class="sidebar-role">Super Administrator</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-section-label">Admin</li>
+      <li><a href="admin-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+      <li><a href="manage-courses.html">  <i class="fas fa-book"></i>Manage Courses</a></li>
+      <li><a href="upload-course.html">   <i class="fas fa-upload"></i>Upload Course</a></li>
+      <li><a href="manage-users.html">    <i class="fas fa-users"></i>Manage Users</a></li>
+      <li class="menu-section-label">Analytics</li>
+      <li><a href="#" onclick="switchTab('revenue',this)">  <i class="fas fa-rupee-sign"></i>Revenue</a></li>
+      <li><a href="#" onclick="switchTab('courses',this)">  <i class="fas fa-chart-bar"></i>Course Stats</a></li>
+      <li><a href="#" onclick="switchTab('users',this)">    <i class="fas fa-user-chart"></i>User Stats</a></li>
+      <li><a href="assessment.html">                        <i class="fas fa-tasks"></i>Assessments</a></li>
+      <li class="menu-section-label">Settings</li>
+      <li><a href="#" onclick="showToast('System settings coming soon')"><i class="fas fa-cog"></i>System Settings</a></li>
+      <li><a href="#" onclick="showToast('Backup started!')">             <i class="fas fa-database"></i>Backup Data</a></li>
+      <li class="menu-section-label">Site</li>
+      <li><a href="dashboard.html"><i class="fas fa-arrow-left"></i>Back to Site</a></li>
+      <li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="admin-topbar fu">
+      <div class="admin-topbar-left">
+        <h1>Admin Dashboard</h1>
+        <p id="admin-date">Monday, March 30, 2026 &nbsp;•&nbsp; LearnGreen LMS v2.0</p>
+      </div>
+      <div class="admin-topbar-right">
+        <button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);" onclick="showToast('Report generated! Check downloads 📥')">
+          <i class="fas fa-download"></i> Export Report
+        </button>
+        <a href="upload-course.html" class="btn btn-primary btn-sm">
+          <i class="fas fa-plus"></i> Add Course
+        </a>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENT STRIP -->
+    <div class="announce" id="ann-strip">
+      <i class="fas fa-info-circle"></i>
+      <p>🚀 <b>Platform Update:</b> New analytics features are now live. Revenue dashboard shows real-time data.</p>
+      <span class="announce-x" onclick="document.getElementById('ann-strip').remove()"><i class="fas fa-times"></i></span>
+    </div>
+
+    <!-- MAIN KPI STATS -->
+    <div class="admin-stats">
+      <div class="astat fu1">
+        <div class="astat-icon" style="background:var(--green-pale);"><i class="fas fa-users" style="color:var(--green-main);"></i></div>
+        <div>
+          <div class="astat-val" id="stat-users">12,450</div>
+          <div class="astat-lbl">Total Users</div>
+          <div class="astat-chg chg-up"><i class="fas fa-arrow-up" style="font-size:9px;"></i> +234 this month</div>
+        </div>
+        <div class="astat-mini">↑ 1.9%</div>
+      </div>
+      <div class="astat fu2">
+        <div class="astat-icon" style="background:#e3f2fd;"><i class="fas fa-book" style="color:#1976d2;"></i></div>
+        <div>
+          <div class="astat-val" style="color:#1976d2;">200</div>
+          <div class="astat-lbl">Total Courses</div>
+          <div class="astat-chg chg-up"><i class="fas fa-arrow-up" style="font-size:9px;color:#1976d2;"></i><span style="color:#1976d2;"> +12 this week</span></div>
+        </div>
+        <div class="astat-mini">↑ 6%</div>
+      </div>
+      <div class="astat fu3">
+        <div class="astat-icon" style="background:#fff3e0;"><i class="fas fa-rupee-sign" style="color:#f57c00;"></i></div>
+        <div>
+          <div class="astat-val" style="color:#f57c00;">₹24.8L</div>
+          <div class="astat-lbl">Total Revenue</div>
+          <div class="astat-chg chg-up"><i class="fas fa-arrow-up" style="font-size:9px;color:#f57c00;"></i><span style="color:#f57c00;"> +₹2.3L this month</span></div>
+        </div>
+        <div class="astat-mini">↑ 9.3%</div>
+      </div>
+      <div class="astat fu4">
+        <div class="astat-icon" style="background:#f3e8fd;"><i class="fas fa-bolt" style="color:#7c3aed;"></i></div>
+        <div>
+          <div class="astat-val" style="color:#7c3aed;">1,842</div>
+          <div class="astat-lbl">Active Today</div>
+          <div class="astat-chg chg-down"><i class="fas fa-arrow-down" style="font-size:9px;color:#e53935;"></i><span style="color:#e53935;"> -3% vs yesterday</span></div>
+        </div>
+        <div class="astat-mini">68% of total</div>
+      </div>
+    </div>
+
+    <!-- REVENUE QUICK CARDS -->
+    <div class="rev-row fu">
+      <div class="rev-card">
+        <div class="rev-icon">💰</div>
+        <div class="rev-val">₹4.12L</div>
+        <div class="rev-lbl">This Month</div>
+        <div class="rev-chg chg-up" style="color:var(--green-main);"><i class="fas fa-arrow-up"></i> +9.3% vs last month</div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-icon">📅</div>
+        <div class="rev-val">₹18,400</div>
+        <div class="rev-lbl">Today's Revenue</div>
+        <div class="rev-chg chg-up" style="color:var(--green-main);"><i class="fas fa-arrow-up"></i> +12% vs yesterday</div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-icon">🏦</div>
+        <div class="rev-val">₹24.8L</div>
+        <div class="rev-lbl">Total Revenue (All Time)</div>
+        <div class="rev-chg" style="color:#1976d2;"><i class="fas fa-info-circle"></i> Since Jan 2024</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD TABS -->
+    <div class="dash-tabs fu">
+      <button class="dash-tab active" id="tab-overview" onclick="switchTab('overview',this)">
+        <i class="fas fa-tachometer-alt"></i> Overview
+      </button>
+      <button class="dash-tab" id="tab-revenue" onclick="switchTab('revenue',this)">
+        <i class="fas fa-rupee-sign"></i> Revenue
+      </button>
+      <button class="dash-tab" id="tab-courses" onclick="switchTab('courses',this)">
+        <i class="fas fa-book"></i> Courses
+      </button>
+      <button class="dash-tab" id="tab-users" onclick="switchTab('users',this)">
+        <i class="fas fa-users"></i> Users
+      </button>
+      <button class="dash-tab" id="tab-enrollments" onclick="switchTab('enrollments',this)">
+        <i class="fas fa-file-invoice"></i> Enrollments
+      </button>
+    </div>
+
+    <!-- ============================================================
+         TAB: OVERVIEW
+         ============================================================ -->
+    <div class="tab-panel active" id="panel-overview">
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <!-- Enrollments Bar Chart -->
+        <div class="chart-card">
+          <div class="chart-card-title">
+            Enrollments — Last 7 Days
+            <span>Total: 1,247 enrollments</span>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-col">
+              <div class="bar-val">156</div>
+              <div class="bar-fill" style="height:60%;"></div>
+              <div class="bar-lbl">Mon</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">198</div>
+              <div class="bar-fill" style="height:78%;background:linear-gradient(to top,#1976d2,#42a5f5);"></div>
+              <div class="bar-lbl">Tue</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">142</div>
+              <div class="bar-fill" style="height:55%;"></div>
+              <div class="bar-lbl">Wed</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">241</div>
+              <div class="bar-fill" style="height:95%;background:linear-gradient(to top,#f57c00,#ffb74d);"></div>
+              <div class="bar-lbl">Thu</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">178</div>
+              <div class="bar-fill" style="height:70%;"></div>
+              <div class="bar-lbl">Fri</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">112</div>
+              <div class="bar-fill" style="height:44%;background:linear-gradient(to top,#7c3aed,#a78bfa);"></div>
+              <div class="bar-lbl">Sat</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-val">220</div>
+              <div class="bar-fill" style="height:87%;"></div>
+              <div class="bar-lbl">Sun</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut Chart -->
+        <div class="chart-card">
+          <div class="chart-card-title">Revenue by Category</div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">
+              <circle class="donut-track" cx="60" cy="60" r="50"/>
+              <circle class="donut-fill" cx="60" cy="60" r="50"
+                stroke="var(--green-main)"
+                stroke-dasharray="314"
+                stroke-dashoffset="80"/>
+              <circle class="donut-fill" cx="60" cy="60" r="50"
+                stroke="#1976d2"
+                stroke-dasharray="314"
+                stroke-dashoffset="220"
+                style="transform:rotate(92deg);transform-origin:center;"/>
+              <circle class="donut-fill" cx="60" cy="60" r="50"
+                stroke="#f57c00"
+                stroke-dasharray="314"
+                stroke-dashoffset="252"
+                style="transform:rotate(182deg);transform-origin:center;"/>
+            </svg>
+            <div class="donut-center">
+              <big>₹24.8L</big>
+              <small>Total</small>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:var(--green-main);"></div>Python / ML — 42%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:#1976d2;"></div>Design / UX — 29%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:#f57c00;"></div>DevOps / Cloud — 18%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:#9aab9a;"></div>Others — 11%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mid Row -->
+      <div class="mid-row">
+
+        <!-- Recent Activity -->
+        <div class="chart-card">
+          <div class="chart-card-title">Recent Activity <span>Live feed</span></div>
+          <div class="act-item"><div class="act-dot" style="background:var(--green-pale);">✅</div><div><div class="act-title">New enrollment: Python Bootcamp</div><div class="act-sub">Rahul Sharma • ₹999</div></div><span class="act-time">2m ago</span></div>
+          <div class="act-item"><div class="act-dot" style="background:#e3f2fd;">👤</div><div><div class="act-title">New user registered</div><div class="act-sub">priya@gmail.com</div></div><span class="act-time">8m ago</span></div>
+          <div class="act-item"><div class="act-dot" style="background:#fce4ec;">🏆</div><div><div class="act-title">Certificate issued</div><div class="act-sub">Alex Johnson — ML Course</div></div><span class="act-time">15m ago</span></div>
+          <div class="act-item"><div class="act-dot" style="background:#fff3e0;">⭐</div><div><div class="act-title">New course review: 5 stars</div><div class="act-sub">React.js Masterclass</div></div><span class="act-time">32m ago</span></div>
+          <div class="act-item"><div class="act-dot" style="background:var(--green-pale);">💳</div><div><div class="act-title">Payment received: ₹2,499</div><div class="act-sub">Machine Learning A-Z</div></div><span class="act-time">1h ago</span></div>
+          <div class="act-item"><div class="act-dot" style="background:#f3e8fd;">📝</div><div><div class="act-title">New course uploaded</div><div class="act-sub">Flutter & Dart Masterclass</div></div><span class="act-time">2h ago</span></div>
+        </div>
+
+        <!-- Top Courses -->
+        <div class="chart-card">
+          <div class="chart-card-title">Top Performing Courses <span>By revenue</span></div>
+          <div class="top-course-item"><div class="tc-thumb" style="background:linear-gradient(135deg,#1a5c2a,#2d8c4e);">🐍</div><div><div class="tc-name">Python Bootcamp</div><div style="font-size:10px;color:var(--text-muted);">12,450 students</div></div><div style="text-align:right;"><div class="tc-val">₹12.4L</div><div class="mini-bar"><div class="mini-fill" style="width:90%;"></div></div></div></div>
+          <div class="top-course-item"><div class="tc-thumb" style="background:linear-gradient(135deg,#c62828,#e53935);">🤖</div><div><div class="tc-name">Machine Learning A-Z</div><div style="font-size:10px;color:var(--text-muted);">22,100 students</div></div><div style="text-align:right;"><div class="tc-val">₹55.2L</div><div class="mini-bar"><div class="mini-fill" style="width:100%;background:linear-gradient(90deg,#c62828,#ef5350);"></div></div></div></div>
+          <div class="top-course-item"><div class="tc-thumb" style="background:linear-gradient(135deg,#1565c0,#1976d2);">🎨</div><div><div class="tc-name">UI/UX Design Masterclass</div><div style="font-size:10px;color:var(--text-muted);">6,200 students</div></div><div style="text-align:right;"><div class="tc-val">₹4.9L</div><div class="mini-bar"><div class="mini-fill" style="width:50%;background:linear-gradient(90deg,#1565c0,#42a5f5);"></div></div></div></div>
+          <div class="top-course-item"><div class="tc-thumb" style="background:linear-gradient(135deg,#7c3aed,#9333ea);">⚛️</div><div><div class="tc-name">React.js Masterclass</div><div style="font-size:10px;color:var(--text-muted);">8,520 students</div></div><div style="text-align:right;"><div class="tc-val">₹12.7L</div><div class="mini-bar"><div class="mini-fill" style="width:72%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div></div></div>
+          <div class="top-course-item"><div class="tc-thumb" style="background:linear-gradient(135deg,#f57c00,#ff9800);">📱</div><div><div class="tc-name">Flutter &amp; Dart</div><div style="font-size:10px;color:var(--text-muted);">5,100 students</div></div><div style="text-align:right;"><div class="tc-val">₹6.6L</div><div class="mini-bar"><div class="mini-fill" style="width:55%;background:linear-gradient(90deg,#f57c00,#ffb74d);"></div></div></div></div>
+        </div>
+
+        <!-- Quick KPIs -->
+        <div>
+          <div class="chart-card-title" style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">Key Metrics</div>
+          <div class="kpi-tile"><div><div class="kpi-lbl">Avg. Course Rating</div><div class="kpi-val">4.8 ⭐</div></div><div class="kpi-trend chg-up" style="color:var(--green-main);">↑ 0.2</div></div>
+          <div class="kpi-tile" style="background:#e3f2fd;"><div><div class="kpi-lbl">Course Completion Rate</div><div class="kpi-val" style="color:#1565c0;">68%</div></div><div class="kpi-trend" style="color:#1565c0;">↑ 3%</div></div>
+          <div class="kpi-tile" style="background:#fff3e0;"><div><div class="kpi-lbl">Revenue Per User</div><div class="kpi-val" style="color:#f57c00;">₹1,992</div></div><div class="kpi-trend" style="color:#f57c00;">↑ ₹120</div></div>
+          <div class="kpi-tile" style="background:#f3e8fd;"><div><div class="kpi-lbl">Avg. Session Duration</div><div class="kpi-val" style="color:#7c3aed;">42 min</div></div><div class="kpi-trend" style="color:#7c3aed;">↑ 5 min</div></div>
+          <div class="kpi-tile" style="background:#fce4ec;"><div><div class="kpi-lbl">Refund Rate</div><div class="kpi-val" style="color:#c62828;">1.8%</div></div><div class="kpi-trend chg-down" style="color:#c62828;">↓ 0.3%</div></div>
+          <div class="kpi-tile"><div><div class="kpi-lbl">Certificates Issued</div><div class="kpi-val">8,342</div></div><div class="kpi-trend chg-up" style="color:var(--green-main);">↑ 142</div></div>
+        </div>
+
+      </div><!-- /mid-row -->
+
+      <!-- Recent Enrollments Table -->
+      <div class="table-wrap fu">
+        <div class="tw-head">
+          <h3>Recent Enrollments</h3>
+          <div class="tw-head-right">
+            <div class="tbl-search"><i class="fas fa-search"></i><input type="text" placeholder="Search enrollments..." oninput="filterEnroll(this.value)"/></div>
+            <select class="f-sel"><option>All Courses</option><option>Python</option><option>Design</option><option>React</option></select>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Exporting CSV... 📥')"><i class="fas fa-download"></i> Export</button>
+          </div>
+        </div>
+        <table id="enroll-table">
+          <thead><tr><th>Student</th><th>Course</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,var(--green-main),var(--green-light));">R</div>Rahul Sharma<br/><small style="color:var(--text-muted);font-size:11px;">rahul@gmail.com</small></div></td><td>Python Bootcamp</td><td>Mar 14, 2026</td><td style="font-weight:700;">₹999</td><td><span class="chip chip-blue">UPI</span></td><td><span class="chip chip-green">Paid</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-view" onclick="showToast('Viewing details...')"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del" onclick="showToast('Refund initiated')"><i class="fas fa-undo"></i></button></div></td></tr>
+            <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#1976d2,#42a5f5);">P</div>Priya Nair<br/><small style="color:var(--text-muted);font-size:11px;">priya@email.com</small></div></td><td>UI/UX Design</td><td>Mar 13, 2026</td><td style="font-weight:700;">₹799</td><td><span class="chip chip-green">Card</span></td><td><span class="chip chip-green">Paid</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del"><i class="fas fa-undo"></i></button></div></td></tr>
+            <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#7c3aed,#9333ea);">A</div>Amit Patel<br/><small style="color:var(--text-muted);font-size:11px;">amit@corp.com</small></div></td><td>Machine Learning A-Z</td><td>Mar 13, 2026</td><td style="font-weight:700;">₹2,499</td><td><span class="chip chip-orange">Net Banking</span></td><td><span class="chip chip-orange">Pending</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit" onclick="showToast('Verifying payment...')"><i class="fas fa-check"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button></div></td></tr>
+            <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#f57c00,#ff9800);">S</div>Sneha Deo<br/><small style="color:var(--text-muted);font-size:11px;">sneha@dev.com</small></div></td><td>React.js Masterclass</td><td>Mar 12, 2026</td><td style="font-weight:700;">₹1,499</td><td><span class="chip chip-blue">UPI</span></td><td><span class="chip chip-green">Paid</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del"><i class="fas fa-undo"></i></button></div></td></tr>
+            <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#c62828,#ef5350);">M</div>Mohammed Ali<br/><small style="color:var(--text-muted);font-size:11px;">ali@example.com</small></div></td><td>Data Analysis</td><td>Mar 11, 2026</td><td style="font-weight:700;">FREE</td><td><span class="chip chip-green">Free</span></td><td><span class="chip chip-green">Active</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /panel-overview -->
+
+
+    <!-- ============================================================
+         TAB: REVENUE
+         ============================================================ -->
+    <div class="tab-panel" id="panel-revenue">
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-card-title">Monthly Revenue — 2026 <span>₹24.8L total</span></div>
+          <div class="bar-chart" style="height:140px;">
+            <div class="bar-col"><div class="bar-val" style="font-size:9px;">₹1.8L</div><div class="bar-fill" style="height:44%;"></div><div class="bar-lbl">Jan</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:9px;">₹2.1L</div><div class="bar-fill" style="height:52%;"></div><div class="bar-lbl">Feb</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:9px;">₹4.1L</div><div class="bar-fill" style="height:100%;background:linear-gradient(to top,#f57c00,#ffb74d);"></div><div class="bar-lbl">Mar</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:9px;">—</div><div class="bar-fill" style="height:10%;background:var(--border);"></div><div class="bar-lbl">Apr</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:9px;">—</div><div class="bar-fill" style="height:10%;background:var(--border);"></div><div class="bar-lbl">May</div></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Revenue Split</div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:8px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>🐍 Python / ML</span><span style="font-weight:700;color:var(--green-dark);">₹10.4L</span></div><div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="height:100%;width:42%;background:var(--green-main);border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>🎨 Design</span><span style="font-weight:700;color:#1976d2;">₹7.2L</span></div><div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="height:100%;width:29%;background:#1976d2;border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>☁️ DevOps</span><span style="font-weight:700;color:#f57c00;">₹4.5L</span></div><div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="height:100%;width:18%;background:#f57c00;border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>💼 Business</span><span style="font-weight:700;color:#7c3aed;">₹2.7L</span></div><div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="height:100%;width:11%;background:#7c3aed;border-radius:4px;"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="tw-head"><h3>Payment Transactions</h3><div class="tw-head-right"><select class="f-sel"><option>All Methods</option><option>UPI</option><option>Card</option><option>Net Banking</option></select><button class="btn btn-primary btn-sm" onclick="showToast('Exporting transactions...')"><i class="fas fa-download"></i> Export</button></div></div>
+        <table><thead><tr><th>Transaction ID</th><th>Student</th><th>Course</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;">TXN-2026-0341</code></td><td>Rahul Sharma</td><td>Python Bootcamp</td><td style="font-weight:700;color:var(--green-dark);">₹999</td><td><span class="chip chip-blue">UPI</span></td><td>Mar 14</td><td><span class="chip chip-green">Success</span></td></tr>
+          <tr><td><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;">TXN-2026-0340</code></td><td>Priya Nair</td><td>UI/UX Design</td><td style="font-weight:700;color:var(--green-dark);">₹799</td><td><span class="chip chip-green">Card</span></td><td>Mar 13</td><td><span class="chip chip-green">Success</span></td></tr>
+          <tr><td><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;">TXN-2026-0339</code></td><td>Amit Patel</td><td>Machine Learning</td><td style="font-weight:700;color:var(--green-dark);">₹2,499</td><td><span class="chip chip-orange">Net Banking</span></td><td>Mar 13</td><td><span class="chip chip-orange">Pending</span></td></tr>
+          <tr><td><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;">TXN-2026-0338</code></td><td>Sneha Deo</td><td>React.js</td><td style="font-weight:700;color:var(--green-dark);">₹1,499</td><td><span class="chip chip-blue">UPI</span></td><td>Mar 12</td><td><span class="chip chip-green">Success</span></td></tr>
+          <tr><td><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;">TXN-2026-0337</code></td><td>Riya Mehta</td><td>Python Bootcamp</td><td style="font-weight:700;color:#c62828;">-₹999</td><td><span class="chip chip-red">Refund</span></td><td>Mar 11</td><td><span class="chip chip-red">Refunded</span></td></tr>
+        </tbody></table>
+      </div>
+    </div><!-- /panel-revenue -->
+
+
+    <!-- ============================================================
+         TAB: COURSES
+         ============================================================ -->
+    <div class="tab-panel" id="panel-courses">
+      <div class="table-wrap">
+        <div class="tw-head"><h3>All Courses</h3><div class="tw-head-right"><div class="tbl-search"><i class="fas fa-search"></i><input type="text" placeholder="Search courses..."/></div><select class="f-sel"><option>All Status</option><option>Published</option><option>Draft</option></select><a href="upload-course.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New Course</a></div></div>
+        <table><thead><tr><th>Course</th><th>Instructor</th><th>Students</th><th>Rating</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1a5c2a,#2d8c4e);display:flex;align-items:center;justify-content:center;font-size:17px;">🐍</div><div><div style="font-weight:600;font-size:13px;">Python Bootcamp</div><div style="font-size:11px;color:var(--text-muted);">English • Beginner</div></div></div></td><td>Dr. Sarah Kumar</td><td>12,450</td><td>⭐ 4.9</td><td style="font-weight:700;">₹12.4L</td><td><span class="chip chip-green">Published</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit" onclick="showToast('Opening editor...')"><i class="fas fa-edit"></i></button><a href="course-detail.html" class="tbl-btn tb-view"><i class="fas fa-eye"></i></a><button class="tbl-btn tb-del" onclick="showToast('Course archived!')"><i class="fas fa-archive"></i></button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#c62828,#e53935);display:flex;align-items:center;justify-content:center;font-size:17px;">🤖</div><div><div style="font-weight:600;font-size:13px;">Machine Learning A-Z</div><div style="font-size:11px;color:var(--text-muted);">English • Advanced</div></div></div></td><td>Dr. Sarah Kumar</td><td>22,100</td><td>⭐ 4.9</td><td style="font-weight:700;">₹55.2L</td><td><span class="chip chip-green">Published</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit"><i class="fas fa-edit"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del"><i class="fas fa-archive"></i></button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#9333ea);display:flex;align-items:center;justify-content:center;font-size:17px;">⚛️</div><div><div style="font-weight:600;font-size:13px;">React.js Masterclass</div><div style="font-size:11px;color:var(--text-muted);">English • Intermediate</div></div></div></td><td>Lisa Morgan</td><td>8,520</td><td>⭐ 4.7</td><td style="font-weight:700;">₹12.7L</td><td><span class="chip chip-gray">Draft</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit"><i class="fas fa-edit"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del"><i class="fas fa-archive"></i></button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1565c0,#1976d2);display:flex;align-items:center;justify-content:center;font-size:17px;">🎨</div><div><div style="font-weight:600;font-size:13px;">UI/UX Design Masterclass</div><div style="font-size:11px;color:var(--text-muted);">Hindi • Beginner</div></div></div></td><td>Mark Rivera</td><td>6,200</td><td>⭐ 4.8</td><td style="font-weight:700;">₹4.9L</td><td><span class="chip chip-green">Published</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit"><i class="fas fa-edit"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del"><i class="fas fa-archive"></i></button></div></td></tr>
+        </tbody></table>
+      </div>
+    </div><!-- /panel-courses -->
+
+
+    <!-- ============================================================
+         TAB: USERS
+         ============================================================ -->
+    <div class="tab-panel" id="panel-users">
+      <div class="admin-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
+        <div class="astat"><div class="astat-icon" style="background:var(--green-pale);"><i class="fas fa-user-graduate" style="color:var(--green-main);"></i></div><div><div class="astat-val">11,420</div><div class="astat-lbl">Students</div></div></div>
+        <div class="astat"><div class="astat-icon" style="background:#e3f2fd;"><i class="fas fa-chalkboard-teacher" style="color:#1976d2;"></i></div><div><div class="astat-val" style="color:#1976d2;">980</div><div class="astat-lbl">Instructors</div></div></div>
+        <div class="astat"><div class="astat-icon" style="background:#f3e8fd;"><i class="fas fa-shield-alt" style="color:#7c3aed;"></i></div><div><div class="astat-val" style="color:#7c3aed;">50</div><div class="astat-lbl">Admins</div></div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="tw-head"><h3>All Users</h3><div class="tw-head-right"><div class="tbl-search"><i class="fas fa-search"></i><input type="text" placeholder="Search users..."/></div><select class="f-sel"><option>All Roles</option><option>Student</option><option>Instructor</option><option>Admin</option></select><button class="btn btn-primary btn-sm" onclick="showToast('Exporting users list...')"><i class="fas fa-download"></i> Export</button></div></div>
+        <table><thead><tr><th>User</th><th>Role</th><th>Courses</th><th>Revenue</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,var(--green-main),var(--green-light));">A</div><div><div style="font-weight:600;font-size:13px;">Alex Johnson</div><div style="font-size:11px;color:var(--text-muted);">alex@example.com</div></div></div></td><td><span class="chip chip-green">Student</span></td><td>5</td><td>₹2,499</td><td>Jan 2025</td><td><span class="chip chip-green">Active</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit" onclick="showToast('Edit user...')"><i class="fas fa-edit"></i></button><button class="tbl-btn tb-view" onclick="showToast('View profile...')"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-block" onclick="showToast('User blocked!')"><i class="fas fa-ban"></i></button></div></td></tr>
+          <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#1976d2,#42a5f5);">S</div><div><div style="font-weight:600;font-size:13px;">Dr. Sarah Kumar</div><div style="font-size:11px;color:var(--text-muted);">sarah@expert.com</div></div></div></td><td><span class="chip chip-blue">Instructor</span></td><td>8 created</td><td>₹32.4L</td><td>Sep 2024</td><td><span class="chip chip-green">Active</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit"><i class="fas fa-edit"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-block"><i class="fas fa-ban"></i></button></div></td></tr>
+          <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#f57c00,#ff9800);">R</div><div><div style="font-weight:600;font-size:13px;">Rahul Sharma</div><div style="font-size:11px;color:var(--text-muted);">rahul@gmail.com</div></div></div></td><td><span class="chip chip-green">Student</span></td><td>3</td><td>₹999</td><td>Feb 2026</td><td><span class="chip chip-orange">Pending</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit" onclick="showToast('Activating user...')"><i class="fas fa-check"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-block"><i class="fas fa-ban"></i></button></div></td></tr>
+          <tr><td><div class="user-cell"><div class="u-av" style="background:linear-gradient(135deg,#c62828,#ef5350);">B</div><div><div style="font-weight:600;font-size:13px;">Bad Actor123</div><div style="font-size:11px;color:var(--text-muted);">bad@spam.com</div></div></div></td><td><span class="chip chip-green">Student</span></td><td>0</td><td>₹0</td><td>Mar 2026</td><td><span class="chip chip-red">Blocked</span></td><td><div style="display:flex;gap:5px;"><button class="tbl-btn tb-edit" onclick="showToast('User unblocked!')"><i class="fas fa-unlock"></i></button><button class="tbl-btn tb-view"><i class="fas fa-eye"></i></button><button class="tbl-btn tb-del" onclick="showToast('User deleted!')"><i class="fas fa-trash"></i></button></div></td></tr>
+        </tbody></table>
+      </div>
+    </div><!-- /panel-users -->
+
+
+    <!-- ============================================================
+         TAB: ENROLLMENTS
+         ============================================================ -->
+    <div class="tab-panel" id="panel-enrollments">
+      <div class="table-wrap">
+        <div class="tw-head"><h3>All Enrollments</h3><div class="tw-head-right"><div class="tbl-search"><i class="fas fa-search"></i><input type="text" placeholder="Search..."/></div><select class="f-sel"><option>All Status</option><option>Paid</option><option>Pending</option><option>Refunded</option></select><button class="btn btn-primary btn-sm" onclick="showToast('Exported!')"><i class="fas fa-download"></i> Export CSV</button></div></div>
+        <table><thead><tr><th>#</th><th>Student</th><th>Course</th><th>Enrolled On</th><th>Progress</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>#1042</td><td>Rahul Sharma</td><td>Python Bootcamp</td><td>Mar 14, 2026</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mini-bar" style="width:60px;"><div class="mini-fill" style="width:65%;"></div></div><span style="font-size:11px;">65%</span></div></td><td>₹999</td><td><span class="chip chip-green">Active</span></td></tr>
+          <tr><td>#1041</td><td>Priya Nair</td><td>UI/UX Design</td><td>Mar 13, 2026</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mini-bar" style="width:60px;"><div class="mini-fill" style="width:30%;"></div></div><span style="font-size:11px;">30%</span></div></td><td>₹799</td><td><span class="chip chip-green">Active</span></td></tr>
+          <tr><td>#1040</td><td>Amit Patel</td><td>Machine Learning</td><td>Mar 13, 2026</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mini-bar" style="width:60px;"><div class="mini-fill" style="width:0%;"></div></div><span style="font-size:11px;">0%</span></div></td><td>₹2,499</td><td><span class="chip chip-orange">Pending</span></td></tr>
+          <tr><td>#1039</td><td>Sneha Deo</td><td>React.js</td><td>Mar 12, 2026</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mini-bar" style="width:60px;"><div class="mini-fill" style="width:10%;"></div></div><span style="font-size:11px;">10%</span></div></td><td>₹1,499</td><td><span class="chip chip-green">Active</span></td></tr>
+          <tr><td>#1038</td><td>Riya Mehta</td><td>Python Bootcamp</td><td>Mar 10, 2026</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mini-bar" style="width:60px;"><div class="mini-fill" style="width:0%;background:#e53935;"></div></div><span style="font-size:11px;">0%</span></div></td><td>-₹999</td><td><span class="chip chip-red">Refunded</span></td></tr>
+        </tbody></table>
+        <div style="display:flex;justify-content:center;gap:8px;padding:14px;">
+          <button class="btn btn-primary btn-sm">1</button>
+          <button class="btn btn-outline btn-sm">2</button>
+          <button class="btn btn-outline btn-sm">3</button>
+          <span style="padding:7px;color:var(--text-muted);">...</span>
+          <button class="btn btn-outline btn-sm">48</button>
+        </div>
+      </div>
+    </div><!-- /panel-enrollments -->
+
+  </main>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+
+/* ============================================================
+   TAB SWITCHER
+   ============================================================ */
+function switchTab(name, clickedBtn) {
+  // Hide all panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  // Deactivate all tab buttons
+  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+  // Show target panel
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  // Activate clicked button
+  const tabBtn = document.getElementById('tab-' + name);
+  if (tabBtn) tabBtn.classList.add('active');
+  // Also handle sidebar nav click (no id match needed)
+  if (clickedBtn && clickedBtn.classList.contains('dash-tab')) {
+    clickedBtn.classList.add('active');
+  }
+}
+
+/* ============================================================
+   SEARCH FILTER FOR ENROLLMENTS TABLE
+   ============================================================ */
+function filterEnroll(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#enroll-table tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   SET TODAY'S DATE
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('admin-date');
+  if (el) {
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('en-IN', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    }) + ' • LearnGreen LMS v2.0';
+  }
+
+  // Animate the bar charts after a short delay
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(bar => {
+      const h = bar.style.height;
+      bar.style.height = '0%';
+      bar.style.transition = 'height 1s ease';
+      setTimeout(() => bar.style.height = h, 100);
+    });
+  }, 300);
+});
+
+</script>
+</body>
+</html>

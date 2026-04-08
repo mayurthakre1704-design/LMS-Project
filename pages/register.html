@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Register</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background:var(--green-pale); }
+    .center-wrap { display:flex;align-items:center;justify-content:center;min-height:100vh;padding:30px 20px; }
+    .auth-card { background:white;border-radius:20px;padding:44px 48px;width:100%;max-width:520px;box-shadow:var(--shadow-lg); }
+    .auth-card h2 { font-size:26px;font-weight:800;color:var(--green-dark);margin-bottom:4px; }
+    .auth-sub { font-size:14px;color:var(--gray-text);margin-bottom:26px; }
+    .auth-sub a { color:var(--green-main);font-weight:600; }
+    .role-row { display:flex;gap:10px;margin-bottom:20px; }
+    .role-btn { flex:1;padding:13px 8px;border:2px solid var(--gray-border);border-radius:10px;background:white;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s;font-family:'Poppins',sans-serif;color:var(--gray-text); }
+    .role-btn i { display:block;font-size:20px;margin-bottom:5px; }
+    .role-btn.active, .role-btn:hover { border-color:var(--green-main);background:var(--green-pale);color:var(--green-dark); }
+    .chk-row { display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-text);margin-bottom:18px; }
+    .chk-row input { accent-color:var(--green-main);width:15px;height:15px; }
+    .chk-row a { color:var(--green-main);font-weight:600; }
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-logo" href="login.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a>
+  <div class="navbar-right">
+    <a href="login.html" class="btn btn-outline">Login</a>
+    <a href="register.html" class="btn btn-primary">Sign Up</a>
+  </div>
+</nav>
+
+<div class="center-wrap">
+  <div class="auth-card fade-up">
+    <h2>Create Account 🚀</h2>
+    <p class="auth-sub">Already have one? <a href="login.html">Sign in here</a></p>
+
+    <label style="font-size:13px;font-weight:600;color:var(--gray-text);display:block;margin-bottom:8px;">I want to join as</label>
+    <div class="role-row">
+      <button class="role-btn active" onclick="pickRole(this,'student')"><i class="fas fa-user-graduate"></i>Student</button>
+      <button class="role-btn"        onclick="pickRole(this,'instructor')"><i class="fas fa-chalkboard-teacher"></i>Instructor</button>
+      <button class="role-btn"        onclick="pickRole(this,'admin')"><i class="fas fa-shield-alt"></i>Admin</button>
+    </div>
+    <input type="hidden" id="role-input" value="student"/>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>First Name</label>
+        <div class="input-icon-wrap"><i class="fas fa-user"></i><input type="text" class="form-input" placeholder="John" id="fname"/></div>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <div class="input-icon-wrap"><i class="fas fa-user"></i><input type="text" class="form-input" placeholder="Doe" id="lname"/></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <div class="input-icon-wrap"><i class="fas fa-envelope"></i><input type="email" class="form-input" placeholder="you@example.com" id="remail"/></div>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-icon-wrap"><i class="fas fa-lock"></i><input type="password" class="form-input" placeholder="Minimum 8 characters" id="rpass"/></div>
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <div class="input-icon-wrap"><i class="fas fa-lock"></i><input type="password" class="form-input" placeholder="Repeat password" id="rpass2"/></div>
+    </div>
+    <label class="chk-row"><input type="checkbox" id="agree"/> I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></label>
+    <button class="btn btn-primary btn-block" onclick="doRegister()">Create Account <i class="fas fa-arrow-right"></i></button>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  function doRegister() {
+    const firstName = document.getElementById('fname').value.trim();
+    const lastName  = document.getElementById('lname').value.trim();
+    const email     = document.getElementById('remail').value.trim();
+    const pass      = document.getElementById('rpass').value;
+    const pass2     = document.getElementById('rpass2').value;
+    const agreed    = document.getElementById('agree').checked;
+    const role      = document.getElementById('role-input').value || 'Student';
+
+    // Validation
+    if (!firstName || !email || !pass) { showToast('Please fill all fields'); return; }
+    if (pass !== pass2)                { showToast('Passwords do not match'); return; }
+    if (!agreed)                       { showToast('Please agree to terms');  return; }
+
+    // ── SAVE USER TO BROWSER STORAGE ──
+    // This data is read by profile.html, dashboard.html, sidebar etc.
+    // to show the correct name everywhere automatically.
+    const user = {
+      firstName : firstName,
+      lastName  : lastName,
+      email     : email,
+      role      : role.charAt(0).toUpperCase() + role.slice(1),
+      plan      : 'Free',
+      location  : 'India',
+      joinDate  : new Date().toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+    };
+    localStorage.setItem('lg_user', JSON.stringify(user));
+
+    showToast('Welcome, ' + firstName + '! Account created 🎓');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+  }
+</script>
+</body>
+</html>

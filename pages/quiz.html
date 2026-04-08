@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LearnGreen — Quiz</title>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+</head><body>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+<nav class="navbar"><a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a><div class="navbar-right"><button class="notif-btn" onclick="showToast('3 notifications 🔔')"><i class="fas fa-bell"></i><div class="notif-badge"></div></button><a href="all-courses.html" class="btn btn-outline"><i class="fas fa-th"></i>Browse</a><a href="profile.html" class="btn btn-primary"><i class="fas fa-user"></i><span id="nav-uname">Account</span></a></div></nav>
+<div class="page-layout"><aside class="sidebar"><div class="sidebar-user"><div class="sidebar-avatar" id="sb-avatar">A</div><div class="sidebar-name" id="sb-name">Alex Johnson</div><div class="sidebar-role" id="sb-role">Student</div></div>
+<ul class="sidebar-menu"><li class="menu-section-label">Main</li>
+<li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+<li><a href="my-courses.html"><i class="fas fa-book-open"></i>My Courses</a></li>
+<li><a href="all-courses.html"><i class="fas fa-th-large"></i>All Courses</a></li>
+<li><a href="assessment.html"><i class="fas fa-tasks"></i>Assessments</a></li>
+<li class="menu-section-label">Learning</li>
+<li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+<li><a href="lesson.html"><i class="fas fa-video"></i>Lesson</a></li>
+<li><a href="quiz.html"  class='active'><i class="fas fa-question-circle"></i>Quizzes</a></li>
+<li class="menu-section-label">Account</li>
+<li><a href="profile.html"><i class="fas fa-user"></i>Profile</a></li>
+<li><a href="edit-profile.html"><i class="fas fa-cog"></i>Settings</a></li>
+<li><a href="admin-dashboard.html"><i class="fas fa-shield-alt"></i>Admin</a></li>
+<li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+</ul></aside><main class="main">
+<div id="quiz-q">
+<div style="background:linear-gradient(135deg,var(--green-dark),var(--green-main));border-radius:16px;padding:24px 28px;color:#fff;margin-bottom:20px;" class="fu">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+<div><div style="font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:1px;">Python Basics Quiz</div><div style="font-size:18px;font-weight:800;margin-top:4px;">Section 1 Assessment</div></div>
+<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px 16px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;"><i class="fas fa-clock"></i><span id="quiz-timer">14:38</span></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:12px;opacity:.7;margin-top:10px;"><span>Question 2 of 10</span><span>20 points each</span></div>
+<div style="height:6px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;margin-top:10px;"><div style="height:100%;background:var(--green-light);border-radius:3px;width:20%;transition:width .5s;"></div></div>
+</div>
+<div class="card fu">
+<div style="font-size:11px;font-weight:700;color:var(--green-main);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Question 2 of 10</div>
+<div style="font-size:17px;font-weight:700;color:var(--green-dark);line-height:1.5;margin-bottom:22px;">What is the correct way to declare a variable in Python?</div>
+<div class="options" style="display:flex;flex-direction:column;gap:11px;">
+<button class="opt" onclick="selectOpt(this)" style="padding:14px 18px;border:2px solid var(--border);border-radius:11px;background:#fff;text-align:left;font-size:14px;font-family:'Poppins',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px;color:var(--text-dark);"><span class="opt-lbl" style="width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">A</span>int x = 42;</button>
+<button class="opt" onclick="selectOpt(this)" style="padding:14px 18px;border:2px solid var(--green-main);border-radius:11px;background:var(--green-pale);text-align:left;font-size:14px;font-family:'Poppins',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px;color:var(--text-dark);"><span class="opt-lbl" style="width:30px;height:30px;border-radius:8px;background:var(--green-main);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:#fff;">B</span>x = 42</button>
+<button class="opt" onclick="selectOpt(this)" style="padding:14px 18px;border:2px solid var(--border);border-radius:11px;background:#fff;text-align:left;font-size:14px;font-family:'Poppins',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px;color:var(--text-dark);"><span class="opt-lbl" style="width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">C</span>declare x = 42</button>
+<button class="opt" onclick="selectOpt(this)" style="padding:14px 18px;border:2px solid var(--border);border-radius:11px;background:#fff;text-align:left;font-size:14px;font-family:'Poppins',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px;color:var(--text-dark);"><span class="opt-lbl" style="width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">D</span>var x = 42</button>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;">
+<button class="btn btn-outline"><i class="fas fa-arrow-left"></i> Previous</button>
+<div style="display:flex;gap:6px;">
+<div style="width:30px;height:30px;border-radius:8px;background:var(--green-main);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;">1</div>
+<div style="width:30px;height:30px;border-radius:8px;background:var(--green-pale);color:var(--green-dark);border:2px solid var(--green-main);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;">2</div>
+<div style="width:30px;height:30px;border-radius:8px;background:var(--bg);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;">3</div>
+<div style="width:30px;height:30px;border-radius:8px;background:var(--bg);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;">...</div>
+<div style="width:30px;height:30px;border-radius:8px;background:var(--bg);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;">10</div>
+</div>
+<button class="btn btn-primary" onclick="submitQuiz()">Next Question <i class="fas fa-arrow-right"></i></button>
+</div>
+</div>
+<div id="quiz-r" style="display:none;text-align:center;padding:48px 20px;">
+<div style="width:90px;height:90px;background:var(--green-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--green-main);margin:0 auto 20px;animation:popIn .5s cubic-bezier(.68,-.55,.265,1.55);">🏆</div>
+<h2 style="font-size:24px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Great Job!</h2>
+<p style="font-size:14px;color:var(--text-muted);margin-bottom:28px;">Python Basics Quiz Completed</p>
+<div style="display:flex;gap:28px;justify-content:center;margin-bottom:28px;">
+<div style="text-align:center;"><div style="font-size:44px;font-weight:800;color:var(--green-dark);">85%</div><div style="font-size:13px;color:var(--text-muted);">Score</div></div>
+<div style="text-align:center;"><div style="font-size:44px;font-weight:800;color:#1976d2;">8/10</div><div style="font-size:13px;color:var(--text-muted);">Correct</div></div>
+<div style="text-align:center;"><div style="font-size:44px;font-weight:800;color:#f57c00;">12m</div><div style="font-size:13px;color:var(--text-muted);">Time Taken</div></div>
+</div>
+<div style="background:var(--green-pale);border-radius:12px;padding:14px;margin-bottom:24px;"><p style="font-size:13px;color:var(--green-dark);">🎉 You passed! Minimum score was 70%.</p></div>
+<div style="display:flex;gap:12px;justify-content:center;"><a href="lesson.html" class="btn btn-primary"><i class="fas fa-play"></i> Continue Learning</a><button class="btn btn-outline" onclick="document.getElementById('quiz-q').style.display='block';document.getElementById('quiz-r').style.display='none';startTimer(878);"><i class="fas fa-redo"></i> Retry Quiz</button></div>
+</div>
+</main></div>
+<script src="../js/main.js"></script><script>document.addEventListener('DOMContentLoaded',()=>startTimer(878));</script></body></html>

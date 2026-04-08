@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LearnGreen — Lesson</title><link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head><body>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+<nav class="navbar"><a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a><div class="navbar-right"><a href="course-player.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Player</a></div></nav>
+<div class="page-layout">
+<aside class="sidebar"><div class="sidebar-user"><div class="sidebar-avatar">A</div><div class="sidebar-name">Alex Johnson</div><div class="sidebar-role">Student</div></div>
+<ul class="sidebar-menu"><li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li><li><a href="my-courses.html"><i class="fas fa-book-open"></i>My Courses</a></li><li><a href="course-player.html" class="active"><i class="fas fa-play-circle"></i>Course Player</a></li><li><a href="quiz.html"><i class="fas fa-question-circle"></i>Quizzes</a></li><li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li></ul></aside>
+<main class="main">
+  <div class="breadcrumb"><a href="my-courses.html">My Courses</a><i class="fas fa-chevron-right"></i><a href="course-player.html">Python Bootcamp</a><i class="fas fa-chevron-right"></i><span>Lesson 2</span></div>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:22px;">
+    <div>
+      <!-- YouTube Embed Area -->
+      <div style="background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;margin-bottom:18px;cursor:pointer;" onclick="showToast(`Opening YouTube video...`)">
+        <div style="text-align:center;color:rgba(255,255,255,.6);">
+          <i class="fab fa-youtube" style="font-size:60px;color:#ff0000;display:block;margin-bottom:12px;"></i>
+          <p style="font-size:15px;">Click to watch on YouTube</p>
+          <div style="background:rgba(255,255,255,.1);border-radius:7px;padding:8px 20px;margin-top:10px;font-size:13px;">▶ Variables & Data Types — Python Tutorial</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-size:17px;font-weight:800;color:var(--green-dark);margin-bottom:6px;">Lesson 2: Variables & Data Types</h3>
+        <p style="font-size:13px;color:var(--gray-text);margin-bottom:16px;">Section 1 • Python Bootcamp • 22 minutes</p>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary btn-sm" onclick="showToast(`Marked complete!`)"><i class="fas fa-check"></i> Mark Complete</button>
+          <button class="btn btn-outline btn-sm" onclick="showToast(`Added to notes!`)"><i class="fas fa-bookmark"></i> Bookmark</button>
+          <a href="quiz.html" class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);text-decoration:none;"><i class="fas fa-question-circle"></i> Take Quiz</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📝 My Notes</div>
+        <textarea class="form-textarea" placeholder="Write your notes here while watching the lesson..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="showToast(`Notes saved!`)"><i class="fas fa-save"></i> Save Notes</button>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">📎 Lesson Resources</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--gray-border);border-radius:9px;cursor:pointer;" onclick="showToast(`Downloading PDF...`)"><div style="width:34px;height:34px;background:var(--green-pale);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📄</div><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Python Cheatsheet.pdf</div><div style="font-size:11px;color:var(--gray-text);">2.4 MB</div></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--gray-border);border-radius:9px;cursor:pointer;" onclick="showToast(`Downloading code...`)"><div style="width:34px;height:34px;background:#e3f2fd;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">💻</div><div style="flex:1;"><div style="font-size:12px;font-weight:600;">variables.py</div><div style="font-size:11px;color:var(--gray-text);">Source code</div></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--gray-border);border-radius:9px;cursor:pointer;" onclick="showToast(`Opening YouTube...`)"><div style="width:34px;height:34px;background:#ffebee;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">▶</div><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Extra YouTube Video</div><div style="font-size:11px;color:#ff4444;">YouTube Link</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📚 Lesson Progress</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;gap:8px;font-size:12px;align-items:center;"><i class="fas fa-check-circle" style="color:var(--green-main);"></i>Introduction (15m)</div>
+          <div style="display:flex;gap:8px;font-size:12px;align-items:center;color:var(--green-dark);font-weight:700;"><i class="fas fa-play-circle" style="color:var(--green-main);"></i>Variables (22m) — NOW</div>
+          <div style="display:flex;gap:8px;font-size:12px;align-items:center;color:#9aab9a;"><i class="fas fa-lock" style="font-size:11px;"></i>Operators (18m)</div>
+          <div style="display:flex;gap:8px;font-size:12px;align-items:center;color:#9aab9a;"><i class="fas fa-lock" style="font-size:11px;"></i>Quiz (15m)</div>
+        </div>
+        <a href="quiz.html" class="btn btn-primary btn-block" style="text-decoration:none;justify-content:center;margin-top:14px;display:flex;"><i class="fas fa-arrow-right"></i> Next: Take Quiz</a>
+      </div>
+    </div>
+  </div>
+</main></div>
+<script src="../js/main.js"></script>
+</body></html>

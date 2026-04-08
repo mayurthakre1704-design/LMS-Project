@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LearnGreen — Upload Course</title><link rel="stylesheet" href="../css/global.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/></head>
+<body><div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+<nav class="navbar"><a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a><div class="navbar-right"><a href="all-courses.html" class="btn btn-outline">Browse</a><a href="profile.html" class="btn btn-primary">Account</a></div></nav>
+<div class="page-layout">
+<aside class="sidebar"><div class="sidebar-user"><div class="sidebar-avatar">A</div><div class="sidebar-name">Alex Johnson</div><div class="sidebar-role">Student • Pro</div></div>
+<ul class="sidebar-menu"><li class="menu-section-label">Main</li>
+<li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+<li><a href="my-courses.html"><i class="fas fa-book-open"></i>My Courses</a></li>
+<li><a href="all-courses.html"><i class="fas fa-th-large"></i>All Courses</a></li>
+<li><a href="assessment.html"><i class="fas fa-tasks"></i>Assessments</a></li>
+<li class="menu-section-label">Learning</li>
+<li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+<li><a href="quiz.html"><i class="fas fa-question-circle"></i>Quizzes</a></li>
+<li class="menu-section-label">Account</li>
+<li><a href="profile.html"><i class="fas fa-user"></i>Profile</a></li>
+<li><a href="edit-profile.html"><i class="fas fa-cog"></i>Settings</a></li>
+<li><a href="admin-dashboard.html"><i class="fas fa-shield-alt"></i>Admin</a></li>
+<li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+</ul></aside>
+<main class="main">
+<div class="page-header"><div class="page-header-left"><h1>Upload Course</h1><p>LearnGreen LMS</p></div></div>
+<div class="card fade-up"><p style="font-size:14px;color:var(--gray-text);line-height:1.8;">This is the <strong>upload-course.html</strong> page. Full code is inside each file — sidebar, navbar, CSS and JS are all properly separated into their own folders.</p>
+<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+<a href="dashboard.html" class="btn btn-primary" style="text-decoration:none;"><i class="fas fa-home"></i>Dashboard</a>
+<a href="all-courses.html" class="btn btn-outline" style="text-decoration:none;">All Courses</a>
+<button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);" onclick="showToast('Upload Course page is ready!')">Test Toast</button>
+</div></div>
+</main></div>
+<script src="../js/main.js"></script></body></html>

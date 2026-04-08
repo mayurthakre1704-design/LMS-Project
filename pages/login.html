@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Login</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; min-height: 100vh; }
+
+    .login-wrap {
+      display: grid;
+      grid-template-columns: 1fr 460px;
+      min-height: 100vh;
+    }
+
+    /* =====================================================
+       LEFT — Background Image + Overlay + Content
+       ===================================================== */
+    .login-left {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 44px 52px;
+
+      /*
+        ▼▼▼ BACKGROUND IMAGE ▼▼▼
+        Change this URL to use your own image.
+        Options:
+          1. Online image:  url('https://your-image-url.jpg')
+          2. Local file:    url('../assets/login-bg.jpg')
+        Free images: unsplash.com  |  pexels.com
+      */
+      background-image: url('../0987.webp');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+    }
+
+    /* Dark gradient overlay — makes text readable over image */
+    .login-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        155deg,
+        rgba(10, 30, 15, 0.88) 0%,
+        rgba(26, 92, 42, 0.78) 45%,
+        rgba(10, 30, 15, 0.92) 100%
+      );
+      z-index: 0;
+    }
+
+    /* Decorative glow circle */
+    .glow-circle {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(93,216,128,0.10), transparent 65%);
+      bottom: -150px; right: -150px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .login-left > *:not(.glow-circle) { position: relative; z-index: 1; }
+
+    /* ---- COMPANY LOGO ---- */
+    .company-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-img-wrap {
+      width: 54px; height: 54px;
+      border-radius: 14px;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    /*
+      ▼▼▼ COMPANY LOGO IMAGE ▼▼▼
+      To use your real logo, replace the emoji below with:
+      <img src="../assets/logo.png" alt="Logo" style="width:38px;height:38px;object-fit:contain;"/>
+    */
+    .logo-img-wrap .logo-emoji { font-size: 30px; }
+    .logo-words { display: flex; flex-direction: column; }
+    .logo-name {
+      font-size: 23px; font-weight: 800;
+      color: white; line-height: 1; letter-spacing: -0.3px;
+    }
+    .logo-name em { color: #5dd880; font-style: normal; }
+    .logo-tagline { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 3px; letter-spacing: 0.3px; }
+
+    /* ---- HERO SECTION (middle) ---- */
+    .hero-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 44px 0;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(93,216,128,0.15);
+      border: 1px solid rgba(93,216,128,0.30);
+      border-radius: 20px; padding: 5px 15px;
+      font-size: 12px; font-weight: 600; color: #7ee89a;
+      margin-bottom: 22px; width: fit-content;
+    }
+    .hero-title {
+      font-size: 42px; font-weight: 800;
+      color: white; line-height: 1.18;
+      margin-bottom: 16px; max-width: 430px;
+    }
+    .hero-title .highlight { color: #5dd880; }
+    .hero-desc {
+      font-size: 15px; color: rgba(255,255,255,0.72);
+      line-height: 1.8; max-width: 400px; margin-bottom: 36px;
+    }
+
+    /* Feature pills */
+    .pills { display: flex; flex-direction: column; gap: 11px; max-width: 410px; }
+    .pill {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 12px 18px;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s;
+    }
+    .pill:hover { background: rgba(255,255,255,0.12); }
+    .pill-ic {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(93,216,128,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .pill b     { display: block; font-size: 13px; font-weight: 700; color: white; }
+    .pill small { font-size: 11px; color: rgba(255,255,255,0.58); }
+
+    /* ---- BOTTOM STATS + TRUST ---- */
+    .left-bottom {}
+    .trusted-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .avatars { display: flex; }
+    .av {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      background: linear-gradient(135deg, #2d8c4e, #5dd880);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white;
+      margin-left: -7px;
+    }
+    .av:first-child { margin-left: 0; }
+    .trusted-text { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+    .stats-strip {
+      display: flex; border-radius: 13px; overflow: hidden;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.11);
+      backdrop-filter: blur(10px);
+    }
+    .stat-cell {
+      flex: 1; text-align: center; padding: 14px 10px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell big   { display: block; font-size: 20px; font-weight: 800; color: white; }
+    .stat-cell small { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.8px; }
+
+    /* =====================================================
+       RIGHT — Login Form
+       ===================================================== */
+    .login-right {
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Subtle green glow top-right */
+    .login-right::before {
+      content: '';
+      position: absolute;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,245,236,0.9), transparent 70%);
+      top: -80px; right: -80px; pointer-events: none;
+    }
+    /* Subtle green glow bottom-left */
+    .login-right::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,245,236,0.7), transparent 70%);
+      bottom: -60px; left: -60px; pointer-events: none;
+    }
+
+    .form-box { width: 100%; max-width: 370px; position: relative; z-index: 1; }
+
+    /* Small logo at top of form */
+    .form-brand {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 34px;
+    }
+    .form-brand .fb-icon {
+      width: 40px; height: 40px; border-radius: 11px;
+      background: linear-gradient(135deg, #2d8c4e, #5dd880);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; color: white;
+    }
+    .form-brand .fb-name { font-size: 19px; font-weight: 800; color: #1a5c2a; }
+    .form-brand .fb-name em { color: #2d8c4e; font-style: normal; }
+
+    .form-title { font-size: 25px; font-weight: 800; color: #1a5c2a; margin-bottom: 5px; }
+    .form-sub   { font-size: 14px; color: #667766; margin-bottom: 28px; }
+    .form-sub a { color: #2d8c4e; font-weight: 600; }
+
+    /* Input groups */
+    .fg { margin-bottom: 17px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; color: #556655; margin-bottom: 7px; }
+    .iw { position: relative; }
+    .iw .il { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #9aab9a; font-size: 15px; pointer-events: none; }
+    .iw .ir { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: #9aab9a; font-size: 14px; cursor: pointer; }
+    .iw input {
+      width: 100%; padding: 12px 42px;
+      border: 2px solid #e0e7e0; border-radius: 10px;
+      font-size: 14px; font-family: 'Poppins', sans-serif;
+      color: #2a3a2a; background: #f4f6f4; outline: none;
+      transition: all 0.2s;
+    }
+    .iw input:focus { border-color: #2d8c4e; background: white; box-shadow: 0 0 0 3px rgba(45,140,78,0.1); }
+    .iw input.err   { border-color: #e53935; background: #fff8f8; }
+    .err-msg { font-size: 11px; color: #e53935; margin-top: 5px; display: none; }
+    .err-msg.show { display: flex; align-items: center; gap: 5px; }
+
+    /* Row: remember + forgot */
+    .f-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 22px;
+    }
+    .chk { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #556655; cursor: pointer; }
+    .chk input { accent-color: #2d8c4e; width: 15px; height: 15px; }
+
+    /* Sign In button */
+    .btn-signin {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #2d8c4e, #3daf63);
+      color: white; border: none; border-radius: 11px;
+      font-size: 15px; font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer; transition: all 0.22s;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+    }
+    .btn-signin:hover  { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(45,140,78,0.32); }
+    .btn-signin:active { transform: translateY(0); }
+    .btn-signin.loading { opacity: 0.8; pointer-events: none; }
+
+    /* Divider */
+    .divider { display: flex; align-items: center; gap: 13px; margin: 20px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e0e7e0; }
+    .divider span { font-size: 12px; color: #9aab9a; }
+
+    /* Social buttons */
+    .social-row { display: flex; gap: 9px; margin-bottom: 20px; }
+    .s-btn {
+      flex: 1; padding: 10px 6px;
+      border: 2px solid #e0e7e0; border-radius: 10px;
+      background: white; font-size: 13px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.2s; color: #2a3a2a;
+    }
+    .s-btn:hover { border-color: #2d8c4e; background: #e8f5ec; }
+    .s-btn i { font-size: 16px; }
+
+    /* Demo box */
+    .demo-box {
+      background: #f4f6f4; border: 1px dashed #c5d5c5;
+      border-radius: 9px; padding: 10px 14px;
+      font-size: 12px; color: #556655; text-align: center; margin-bottom: 22px;
+    }
+    .demo-box b { color: #1a5c2a; }
+
+    /* Bottom feature list */
+    .bottom-features { display: flex; flex-direction: column; gap: 9px; }
+    .bf {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: #667766;
+    }
+    .bf-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: #e8f5ec; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; color: #2d8c4e; flex-shrink: 0;
+    }
+    .bf b { color: #1a5c2a; font-weight: 600; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a5c2a; color: white;
+      padding: 13px 24px; border-radius: 12px;
+      font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; gap: 9px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      z-index: 9999; transition: transform 0.3s; pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast i { color: #5dd880; }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+    .fu   { animation: fadeUp 0.5s ease both; }
+    .fu1  { animation: fadeUp 0.5s 0.08s ease both; }
+    .fu2  { animation: fadeUp 0.5s 0.16s ease both; }
+    .fu3  { animation: fadeUp 0.5s 0.24s ease both; }
+    .fu4  { animation: fadeUp 0.5s 0.32s ease both; }
+
+  </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<div class="login-wrap">
+
+  <!-- ============================================================
+       LEFT PANEL
+       ============================================================ -->
+  <div class="login-left">
+    <div class="glow-circle"></div>
+
+    <!-- ▼ COMPANY LOGO — change emoji or swap for <img> tag -->
+    <div class="company-logo">
+      <div class="logo-img-wrap">
+        <!--
+          OPTION A — Emoji (current):
+          Change the emoji to match your brand
+
+          OPTION B — Real image:
+          Replace the span with:
+          <img src="../assets/logo.png" alt="Logo" style="width:38px;height:38px;object-fit:contain;"/>
+        -->
+        <span class="logo-emoji">🎓</span>
+      </div>
+      <div class="logo-words">
+        <div class="logo-name">learn<em>Sphere</em></div>
+        <div class="logo-tagline">Online Learning Platform</div>
+      </div>
+    </div>
+
+    <!-- ▼ HERO TEXT -->
+    <div class="hero-body">
+      <div class="hero-badge">
+        <i class="fas fa-bolt"></i> #1 Learning Platform in India
+      </div>
+      <h1 class="hero-title">
+        Learn Sphere That<br/>
+        <span class="highlight">Shape Your Future</span>
+      </h1>
+      <p class="hero-desc">
+        Join 50,000+ students mastering programming, design, business, and more with expert-led video courses — in your language, at your pace.
+      </p>
+
+      <!-- Feature pills -->
+      <div class="pills">
+        <div class="pill">
+          <div class="pill-ic">🎓</div>
+          <div><b>Expert Instructors</b><small>Learn from real industry professionals</small></div>
+        </div>
+        <div class="pill">
+          <div class="pill-ic">🏆</div>
+          <div><b>Verified Certificates</b><small>Add credentials to your LinkedIn profile</small></div>
+        </div>
+        <div class="pill">
+          <div class="pill-ic">🌍</div>
+          <div><b>All Languages</b><small>English, Hindi, Marathi, Tamil & more</small></div>
+        </div>
+        <div class="pill">
+          <div class="pill-ic">📱</div>
+          <div><b>Learn Anywhere</b><small>Desktop, tablet, or mobile — anytime</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▼ TRUSTED BY + STATS -->
+    <div class="left-bottom">
+      <div class="trusted-row">
+        <div class="avatars">
+          <div class="av">R</div>
+          <div class="av">P</div>
+          <div class="av">A</div>
+          <div class="av">S</div>
+          <div class="av" style="font-size:10px;">+</div>
+        </div>
+        <span class="trusted-text">Trusted by 50,000+ learners worldwide</span>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-cell"><big>50K+</big><small>Students</small></div>
+        <div class="stat-cell"><big>200+</big><small>Courses</small></div>
+        <div class="stat-cell"><big>15+</big><small>Languages</small></div>
+        <div class="stat-cell"><big>95%</big><small>Satisfaction</small></div>
+      </div>
+    </div>
+
+  </div><!-- /login-left -->
+
+
+  <!-- ============================================================
+       RIGHT PANEL — Form
+       ============================================================ -->
+  <div class="login-right">
+    <div class="form-box">
+
+      <!-- Small brand logo on form panel -->
+      <div class="form-brand fu">
+        <div class="fb-icon">🎓</div>
+        <div class="fb-name">Learn<em>Sphere</em></div>
+      </div>
+
+      <h2 class="form-title fu1">Welcome back 👋</h2>
+      <p  class="form-sub   fu1">
+        New here? <a href="register.html">Create a free account</a>
+      </p>
+
+      <!-- Email -->
+      <div class="fg fu2">
+        <label>Email Address</label>
+        <div class="iw">
+          <i class="fas fa-envelope il"></i>
+          <input type="email" id="email" placeholder="you@example.com" oninput="clearErr('email-err')"/>
+        </div>
+        <div class="err-msg" id="email-err">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid email
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="fg fu2">
+        <label>Password</label>
+        <div class="iw">
+          <i class="fas fa-lock il"></i>
+          <input type="password" id="pass" placeholder="Your password" oninput="clearErr('pass-err')"/>
+          <!-- Eye toggle -->
+          <i class="fas fa-eye ir" id="eye" onclick="toggleEye()"></i>
+        </div>
+        <div class="err-msg" id="pass-err">
+          <i class="fas fa-exclamation-circle"></i> Password is required
+        </div>
+      </div>
+
+      <!-- Remember + Forgot -->
+      <div class="f-row fu3">
+        <label class="chk"><input type="checkbox" checked/> Remember me</label>
+        <a href="forgot-password.html" style="font-size:13px;color:#2d8c4e;font-weight:600;">
+          Forgot password?
+        </a>
+      </div>
+
+      <!-- Sign In button -->
+      <button class="btn-signin fu3" id="signin-btn" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i>
+        Sign In
+        <i class="fas fa-arrow-right" style="font-size:13px;"></i>
+      </button>
+
+      <!-- Divider -->
+      <div class="divider fu4"><span>or continue with</span></div>
+
+      <!-- Social buttons -->
+      <div class="social-row fu4">
+        <button class="s-btn" onclick="socialLogin('Google')">
+          <i class="fab fa-google" style="color:#ea4335;"></i> Google
+        </button>
+        <button class="s-btn" onclick="socialLogin('GitHub')">
+          <i class="fab fa-github"></i> GitHub
+        </button>
+        <button class="s-btn" onclick="socialLogin('Microsoft')">
+          <i class="fab fa-microsoft" style="color:#00a4ef;"></i> Microsoft
+        </button>
+      </div>
+
+      <!-- Demo hint -->
+      <div class="demo-box fu4">
+        🔑 <b>Demo:</b> Enter any email + password → click <b>Sign In</b>
+      </div>
+
+      <!-- Bottom features -->
+      <div class="bottom-features fu4">
+        <div class="bf">
+          <div class="bf-icon"><i class="fas fa-shield-alt"></i></div>
+          <span><b>Secure login</b> — SSL encrypted, always protected</span>
+        </div>
+        <div class="bf">
+          <div class="bf-icon"><i class="fas fa-infinity"></i></div>
+          <span><b>Lifetime access</b> — Learn at your own pace, forever</span>
+        </div>
+        <div class="bf">
+          <div class="bf-icon"><i class="fas fa-undo"></i></div>
+          <span><b>30-day refund</b> — No questions asked guarantee</span>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /login-right -->
+
+</div><!-- /login-wrap -->
+
+<script src="../js/main.js"></script>
+<script>
+
+  /* ---- Show / Hide password ---- */
+  function toggleEye() {
+    const input = document.getElementById('pass');
+    const eye   = document.getElementById('eye');
+    if (input.type === 'password') {
+      input.type   = 'text';
+      eye.className = 'fas fa-eye-slash ir';
+    } else {
+      input.type   = 'password';
+      eye.className = 'fas fa-eye ir';
+    }
+  }
+
+  /* ---- Clear error message ---- */
+  function clearErr(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+    // Also remove red border
+    if (id === 'email-err') document.getElementById('email').classList.remove('err');
+    if (id === 'pass-err')  document.getElementById('pass').classList.remove('err');
+  }
+
+  /* ---- Login logic ---- */
+  function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('pass').value;
+    const btn   = document.getElementById('signin-btn');
+    let valid   = true;
+
+    if (!email || !email.includes('@')) {
+      document.getElementById('email-err').classList.add('show');
+      document.getElementById('email').classList.add('err');
+      valid = false;
+    }
+    if (!pass) {
+      document.getElementById('pass-err').classList.add('show');
+      document.getElementById('pass').classList.add('err');
+      valid = false;
+    }
+    if (!valid) return;
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+    // Save a demo user if none registered yet
+    // (so profile page always shows a name)
+    if (!localStorage.getItem('lg_user')) {
+      const namePart  = email.split('@')[0];
+      const firstName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      localStorage.setItem('lg_user', JSON.stringify({
+        firstName : firstName,
+        lastName  : '',
+        email     : email,
+        role      : 'Student',
+        plan      : 'Pro',
+        location  : 'India',
+        joinDate  : 'Jan 2025'
+      }));
+    }
+
+    setTimeout(() => {
+      const u = JSON.parse(localStorage.getItem('lg_user') || '{}');
+      showToast('Welcome back, ' + (u.firstName || 'Alex') + '! 🎉');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+    }, 1200);
+  }
+
+  /* ---- Social login ---- */
+  function socialLogin(provider) {
+    showToast('Connecting with ' + provider + '...');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+  }
+
+  /* ---- Toast (fallback if main.js not loaded) ---- */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ---- Enter key ---- */
+  document.addEventListener('keydown', ev => { if (ev.key === 'Enter') doLogin(); });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Course Player</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .player-wrap { display: grid; grid-template-columns: 1fr 300px; height: calc(100vh - 68px); }
+    .player-left  { display: flex; flex-direction: column; background: #111; overflow: hidden; }
+
+    /* ============================
+       VIDEO AREA — YouTube iframe
+       ============================ */
+    .video-area {
+      flex: 1;
+      background: #000;
+      position: relative;
+      min-height: 0;
+    }
+    .video-area iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .video-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      color: rgba(255,255,255,0.55);
+    }
+    .video-placeholder i     { font-size: 72px; color: #ff0000; }
+    .video-placeholder p     { font-size: 15px; }
+    .video-placeholder small { font-size: 12px; opacity: 0.6; }
+
+    /* ============================
+       YOUTUBE LINK INPUT BAR
+       ============================ */
+    .yt-link-bar {
+      background: #1a1a1a;
+      padding: 10px 22px;
+      display: flex; gap: 10px; align-items: center;
+      border-top: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+    .yt-link-bar label { font-size: 12px; color: rgba(255,255,255,0.55); white-space: nowrap; }
+    .yt-link-bar input {
+      flex: 1; background: #2a2a2a; border: 1px solid #3a3a3a;
+      border-radius: 7px; padding: 9px 13px; color: white;
+      font-family: 'Poppins', sans-serif; font-size: 13px; outline: none;
+    }
+    .yt-link-bar input::placeholder { color: rgba(255,255,255,0.3); }
+    .yt-link-bar input:focus { border-color: var(--green-main); }
+
+    /* ============================
+       PLAYER INFO BAR
+       ============================ */
+    .player-info {
+      background: #181818; padding: 14px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid #2a2a2a; flex-shrink: 0;
+    }
+    .player-info h3 { font-size: 15px; font-weight: 700; color: white; }
+    .player-info p  { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 3px; }
+
+    /* ============================
+       NOTES & RESOURCES
+       ============================ */
+    .bottom-panel {
+      padding: 16px 22px; background: #151515;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 18px; overflow-y: auto; flex-shrink: 0; max-height: 200px;
+    }
+    .panel-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); margin-bottom: 9px; }
+    .bottom-panel textarea {
+      width: 100%; background: #222; border: 1px solid #333; border-radius: 8px;
+      padding: 9px 11px; color: rgba(255,255,255,.7);
+      font-family: 'Poppins', sans-serif; font-size: 12px;
+      min-height: 70px; outline: none; resize: vertical;
+    }
+    .resource-item {
+      display: flex; gap: 9px; align-items: center;
+      background: #222; border-radius: 8px; padding: 9px;
+      cursor: pointer; margin-bottom: 7px; transition: background .18s;
+    }
+    .resource-item:hover { background: #2d2d2d; }
+    .r-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .r-name  { font-size: 12px; color: rgba(255,255,255,.8); flex: 1; }
+    .r-label { font-size: 10px; }
+
+    /* ============================
+       PLAYLIST SIDEBAR
+       ============================ */
+    .playlist { background: white; overflow-y: auto; }
+    .pl-head    { padding: 16px 18px 11px; font-weight: 700; font-size: 14px; color: var(--green-dark); border-bottom: 1px solid var(--gray-border); }
+    .pl-section { padding: 10px 18px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #9aab9a; }
+    .pl-item    { display: flex; gap: 10px; padding: 11px 18px; cursor: pointer; transition: all .18s; border-left: 3px solid transparent; }
+    .pl-item:hover  { background: var(--green-pale); }
+    .pl-item.active { background: var(--green-pale); border-left-color: var(--green-main); }
+    .pl-num   { width: 20px; font-size: 12px; color: #9aab9a; flex-shrink: 0; padding-top: 1px; }
+    .pl-title { font-size: 12px; font-weight: 500; color: var(--gray-dark); line-height: 1.4; }
+    .pl-meta  { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a>
+  <div class="navbar-right">
+    <a href="my-courses.html" class="btn btn-outline">My Courses</a>
+    <a href="profile.html"   class="btn btn-primary">Account</a>
+  </div>
+</nav>
+
+<div class="player-wrap">
+
+  <!-- ============================================================
+       LEFT — Video Player
+       ============================================================ -->
+  <div class="player-left">
+
+    <!-- VIDEO AREA -->
+    <div class="video-area" id="video-area">
+      <div class="video-placeholder" id="placeholder">
+        <i class="fab fa-youtube"></i>
+        <p>Click any lesson in the playlist to play</p>
+        <small>Or paste a YouTube link below</small>
+      </div>
+    </div>
+
+    <!-- ▼▼▼ YOUTUBE LINK INPUT BAR ▼▼▼
+         Paste any YouTube URL here and click Play.
+         Supports: youtube.com/watch?v=...  |  youtu.be/...  |  youtube.com/shorts/...
+    -->
+    <div class="yt-link-bar">
+      <i class="fab fa-youtube" style="color:#ff0000;font-size:18px;flex-shrink:0;"></i>
+      <label>YouTube Link:</label>
+      <input
+        type="text"
+        id="yt-url-input"
+        placeholder="Paste YouTube URL — e.g. https://www.youtube.com/watch?v=rfscVS0vtbw"
+      />
+      <button class="btn btn-primary btn-sm" onclick="loadYouTubeFromInput()">
+        <i class="fas fa-play"></i> Play
+      </button>
+      <button class="btn btn-sm" style="background:#2a2a2a;color:rgba(255,255,255,.7);" onclick="clearVideo()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- PLAYER INFO BAR -->
+    <div class="player-info">
+      <div>
+        <h3 id="now-title">Select a lesson to begin</h3>
+        <p  id="now-sub">Python Bootcamp • Section 1: Python Basics</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="showToast('Marked complete! ✓')">
+          <i class="fas fa-check"></i> Complete
+        </button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:white;" onclick="showToast('Ask your question!')">
+          <i class="fas fa-question-circle"></i> Ask
+        </button>
+      </div>
+    </div>
+
+    <!-- NOTES & RESOURCES -->
+    <div class="bottom-panel">
+      <div>
+        <div class="panel-title">📝 My Notes</div>
+        <textarea id="notes-area" placeholder="Write notes while watching..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:7px;" onclick="saveNotes()">
+          <i class="fas fa-save"></i> Save Notes
+        </button>
+      </div>
+      <div>
+        <div class="panel-title">📎 Resources</div>
+        <div class="resource-item" onclick="showToast('Downloading PDF...')">
+          <div class="r-icon" style="background:#1a5c2a;">📄</div>
+          <span class="r-name">Python Cheatsheet.pdf</span>
+          <span class="r-label" style="color:#9aab9a;">2.4 MB</span>
+        </div>
+        <div class="resource-item" onclick="showToast('Downloading code...')">
+          <div class="r-icon" style="background:#1a3a5c;">💻</div>
+          <span class="r-name">variables_example.py</span>
+          <span class="r-label" style="color:#64b5f6;">Code</span>
+        </div>
+        <!--
+          ▼ ADD MORE YOUTUBE RESOURCE LINKS HERE
+          Change the URL inside openYTLink('...') to your video
+        -->
+        <div class="resource-item" onclick="openYTLink('https://www.youtube.com/watch?v=rfscVS0vtbw')">
+          <div class="r-icon" style="background:#3d1a1a;">▶</div>
+          <span class="r-name">Python Full Course — freeCodeCamp</span>
+          <span class="r-label" style="color:#ff4444;">YouTube ↗</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /player-left -->
+
+
+  <!-- ============================================================
+       RIGHT — Playlist
+       ▼▼▼ TO ADD A YOUTUBE LINK TO ANY LESSON:
+           Add  data-yt="https://www.youtube.com/watch?v=VIDEO_ID"
+           to the .pl-item div of that lesson.
+       ============================================================ -->
+  <div class="playlist">
+    <div class="pl-head">
+      Course Playlist
+      <span style="float:right;font-size:11px;font-weight:400;color:var(--gray-text);">26/40 done</span>
+    </div>
+
+    <!-- ── SECTION 1 ── -->
+    <div class="pl-section">Section 1: Python Basics</div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=Y8Tko2YC5hA"
+         data-title="Lesson 1: Introduction to Python"
+         data-sub="Section 1 • 15 min"
+         onclick="playLesson(this)">
+      <span class="pl-num"><i class="fas fa-check" style="color:var(--green-main);font-size:12px;"></i></span>
+      <div><div class="pl-title">Introduction to Python</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 15m</div></div>
+    </div>
+
+    <div class="pl-item active"
+         data-yt="https://www.youtube.com/watch?v=rfscVS0vtbw"
+         data-title="Lesson 2: Variables & Data Types"
+         data-sub="Section 1 • 22 min"
+         onclick="playLesson(this)">
+      <span class="pl-num" style="color:var(--green-main);font-weight:800;">▶</span>
+      <div><div class="pl-title" style="color:var(--green-dark);font-weight:700;">Variables &amp; Data Types</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 22m • Now Playing</div></div>
+    </div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=Ber4_AJLKRU"
+         data-title="Lesson 3: Operators & Expressions"
+         data-sub="Section 1 • 18 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">3</span>
+      <div><div class="pl-title">Operators &amp; Expressions</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 18m</div></div>
+    </div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=daefaLgNkw0"
+         data-title="Lesson 4: Lists & Tuples"
+         data-sub="Section 1 • 20 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">4</span>
+      <div><div class="pl-title">Lists &amp; Tuples</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 20m</div></div>
+    </div>
+
+    <!-- Quiz — no YouTube, goes to quiz page -->
+    <div class="pl-item" onclick="window.location.href='quiz.html'">
+      <span class="pl-num" style="color:#c62828;">Q</span>
+      <div><div class="pl-title">Quiz: Python Basics</div><div class="pl-meta"><i class="fas fa-question-circle"></i> 15m</div></div>
+    </div>
+
+    <!-- ── SECTION 2 ── -->
+    <div class="pl-section">Section 2: Control Flow</div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=AWek49wXGzI"
+         data-title="Lesson 6: If / Else Statements"
+         data-sub="Section 2 • 20 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">6</span>
+      <div><div class="pl-title">If / Else Statements</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 20m</div></div>
+    </div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=94UHCEmprCY"
+         data-title="Lesson 7: Loops — For & While"
+         data-sub="Section 2 • 28 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">7</span>
+      <div><div class="pl-title">Loops: For &amp; While</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 28m</div></div>
+    </div>
+
+    <!-- ── SECTION 3 ── -->
+    <div class="pl-section">Section 3: Functions &amp; OOP</div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=9Os0o3wzS_I"
+         data-title="Lesson 8: Functions"
+         data-sub="Section 3 • 25 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">8</span>
+      <div><div class="pl-title">Defining Functions</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 25m</div></div>
+    </div>
+
+    <div class="pl-item"
+         data-yt="https://www.youtube.com/watch?v=q2SGW2VgwAM"
+         data-title="Lesson 9: Classes & OOP"
+         data-sub="Section 3 • 32 min"
+         onclick="playLesson(this)">
+      <span class="pl-num">9</span>
+      <div><div class="pl-title">Classes &amp; OOP</div><div class="pl-meta"><i class="fas fa-play-circle"></i> 32m</div></div>
+    </div>
+
+    <div style="padding:14px 18px;">
+      <a href="quiz.html" class="btn btn-primary btn-block" style="text-decoration:none;justify-content:center;display:flex;">
+        <i class="fas fa-arrow-right"></i> Next: Take Quiz
+      </a>
+    </div>
+
+  </div><!-- /playlist -->
+
+</div><!-- /player-wrap -->
+
+<script src="../js/main.js"></script>
+<script>
+/* ============================================================
+   FILE: pages/course-player.html  (JavaScript section)
+   PURPOSE: YouTube embed logic
+   ============================================================ */
+
+/* ---- Convert any YouTube URL to embed URL ----
+   Supports:
+     youtube.com/watch?v=VIDEO_ID
+     youtu.be/VIDEO_ID
+     youtube.com/shorts/VIDEO_ID
+     youtube.com/embed/VIDEO_ID  (already embed)
+   ------------------------------------------------ */
+function getEmbedURL(url) {
+  if (!url) return null;
+  url = url.trim();
+
+  if (url.includes('youtube.com/embed/')) return url + '?autoplay=1&rel=0';
+
+  const short  = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (short)   return `https://www.youtube.com/embed/${short[1]}?autoplay=1&rel=0`;
+
+  const shorts = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (shorts)  return `https://www.youtube.com/embed/${shorts[1]}?autoplay=1&rel=0`;
+
+  const watch  = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watch)   return `https://www.youtube.com/embed/${watch[1]}?autoplay=1&rel=0`;
+
+  return null;
+}
+
+/* ---- Inject iframe into .video-area ---- */
+function loadVideo(embedURL, title, sub) {
+  const area = document.getElementById('video-area');
+
+  const ph = document.getElementById('placeholder');
+  if (ph) ph.remove();
+
+  const old = area.querySelector('iframe');
+  if (old) old.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.src = embedURL;
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  iframe.allowFullscreen = true;
+  area.appendChild(iframe);
+
+  document.getElementById('now-title').textContent = title || 'Now Playing';
+  document.getElementById('now-sub').textContent   = sub   || '';
+}
+
+/* ---- Playlist item click ---- */
+function playLesson(item) {
+  const url   = item.getAttribute('data-yt');
+  const title = item.getAttribute('data-title');
+  const sub   = item.getAttribute('data-sub');
+
+  if (!url) { showToast('No video linked yet'); return; }
+
+  const embed = getEmbedURL(url);
+  if (!embed)  { showToast('Invalid YouTube link'); return; }
+
+  document.querySelectorAll('.pl-item').forEach(el => el.classList.remove('active'));
+  item.classList.add('active');
+
+  loadVideo(embed, title, sub);
+  showToast('▶ Playing: ' + (title || 'Video'));
+}
+
+/* ---- Paste link in input bar ---- */
+function loadYouTubeFromInput() {
+  const input = document.getElementById('yt-url-input');
+  const url   = input.value.trim();
+
+  if (!url) { showToast('Paste a YouTube link first'); return; }
+
+  const embed = getEmbedURL(url);
+  if (!embed)  { showToast('⚠️ Invalid YouTube URL. Try: youtube.com/watch?v=...'); return; }
+
+  document.querySelectorAll('.pl-item').forEach(el => el.classList.remove('active'));
+
+  loadVideo(embed, 'Custom Video', 'From your YouTube link');
+  showToast('▶ Playing your YouTube video!');
+}
+
+/* ---- Clear video ---- */
+function clearVideo() {
+  const area = document.getElementById('video-area');
+  const old  = area.querySelector('iframe');
+  if (old) old.remove();
+
+  if (!document.getElementById('placeholder')) {
+    const ph = document.createElement('div');
+    ph.id = 'placeholder'; ph.className = 'video-placeholder';
+    ph.innerHTML = `<i class="fab fa-youtube"></i><p>Click a lesson to play</p><small>Or paste a YouTube link below</small>`;
+    area.appendChild(ph);
+  }
+
+  document.getElementById('now-title').textContent = 'Select a lesson to begin';
+  document.getElementById('now-sub').textContent   = 'Python Bootcamp • Section 1';
+  document.getElementById('yt-url-input').value    = '';
+  document.querySelectorAll('.pl-item').forEach(el => el.classList.remove('active'));
+  showToast('Video stopped');
+}
+
+/* ---- Open YouTube link in new tab (Resources) ---- */
+function openYTLink(url) {
+  window.open(url, '_blank');
+}
+
+/* ---- Save notes ---- */
+function saveNotes() {
+  const n = document.getElementById('notes-area').value;
+  if (!n.trim()) { showToast('Write something first!'); return; }
+  showToast('Notes saved! ✓');
+}
+
+/* ---- Auto-load active lesson on page open ---- */
+document.addEventListener('DOMContentLoaded', () => {
+  const active = document.querySelector('.pl-item.active[data-yt]');
+  if (active) {
+    const embed = getEmbedURL(active.getAttribute('data-yt'));
+    if (embed) loadVideo(embed, active.getAttribute('data-title'), active.getAttribute('data-sub'));
+  }
+});
+</script>
+</body>
+</html>

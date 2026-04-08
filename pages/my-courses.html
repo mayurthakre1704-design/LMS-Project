@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LearnGreen — My Courses</title><link rel="stylesheet" href="../css/global.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/></head><body>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+<nav class="navbar"><a class="navbar-logo" href="dashboard.html"><div class="logo-box">🎓</div>Learn<span>Green</span></a><div class="navbar-right"><a href="all-courses.html" class="btn btn-outline">Browse</a><a href="profile.html" class="btn btn-primary">Account</a></div></nav>
+<div class="page-layout">
+<aside class="sidebar"><div class="sidebar-user"><div class="sidebar-avatar">A</div><div class="sidebar-name">Alex Johnson</div><div class="sidebar-role">Student • Pro</div></div>
+<ul class="sidebar-menu"><li class="menu-section-label">Main</li>
+<li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+<li><a href="my-courses.html"><i class="fas fa-book-open"></i>My Courses</a></li>
+<li><a href="all-courses.html"><i class="fas fa-th-large"></i>All Courses</a></li>
+<li><a href="assessment.html"><i class="fas fa-tasks"></i>Assessments</a></li>
+<li class="menu-section-label">Learning</li>
+<li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+<li><a href="quiz.html"><i class="fas fa-question-circle"></i>Quizzes</a></li>
+<li class="menu-section-label">Account</li>
+<li><a href="profile.html"><i class="fas fa-user"></i>Profile</a></li>
+<li><a href="edit-profile.html"><i class="fas fa-cog"></i>Settings</a></li>
+<li><a href="admin-dashboard.html"><i class="fas fa-shield-alt"></i>Admin</a></li>
+<li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+</ul></aside>
+<main class="main">
+<div class="page-header"><div class="page-header-left"><h1>My Courses</h1><p>5 courses enrolled</p></div><a href="all-courses.html" class="btn btn-primary"><i class="fas fa-plus"></i>Explore More</a></div>
+<div style="display:flex;gap:8px;margin-bottom:20px;">
+  <button style="padding:7px 18px;border-radius:20px;border:none;background:var(--green-main);color:white;font-size:12px;font-weight:700;font-family:Poppins,sans-serif;cursor:pointer;">All (5)</button>
+  <button style="padding:7px 18px;border-radius:20px;border:2px solid var(--gray-border);background:white;font-size:12px;font-weight:600;font-family:Poppins,sans-serif;cursor:pointer;color:var(--gray-text);">In Progress (3)</button>
+  <button style="padding:7px 18px;border-radius:20px;border:2px solid var(--gray-border);background:white;font-size:12px;font-weight:600;font-family:Poppins,sans-serif;cursor:pointer;color:var(--gray-text);">Completed (2)</button>
+</div>
+<div class="course-grid-3">
+  <a href="course-player.html" class="course-card" style="text-decoration:none;"><div class="course-thumb" style="background:linear-gradient(135deg,#1a5c2a,#2d8c4e);">🐍</div><div class="course-body"><div class="course-name">Python for Beginners</div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" data-w="65%" style="width:65%"></div></div><div class="progress-labels"><span>65%</span><span>26/40</span></div></div></div><div class="course-footer"><span style="font-size:12px;color:var(--gray-text);"><i class="fas fa-clock"></i> 8h left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();">Continue</button></div></a>
+  <a href="course-player.html" class="course-card" style="text-decoration:none;"><div class="course-thumb" style="background:linear-gradient(135deg,#1565c0,#1976d2);">🎨</div><div class="course-body"><div class="course-name">UI/UX Design Masterclass</div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" data-w="30%" style="width:30%"></div></div><div class="progress-labels"><span>30%</span><span>9/30</span></div></div></div><div class="course-footer"><span style="font-size:12px;color:var(--gray-text);"><i class="fas fa-clock"></i> 13h left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();">Continue</button></div></a>
+  <a href="course-player.html" class="course-card" style="text-decoration:none;"><div class="course-thumb" style="background:linear-gradient(135deg,#7c3aed,#9333ea);">⚛️</div><div class="course-body"><div class="course-name">React.js Modern Web Apps</div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" data-w="10%" style="width:10%"></div></div><div class="progress-labels"><span>10%</span><span>3/48</span></div></div></div><div class="course-footer"><span style="font-size:12px;color:var(--gray-text);"><i class="fas fa-clock"></i> 29h left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();">Continue</button></div></a>
+  <a href="profile.html" class="course-card" style="text-decoration:none;"><div class="course-thumb" style="background:linear-gradient(135deg,#00796b,#009688);">📊</div><div class="course-body"><div class="course-name">Data Analysis with Pandas</div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:100%;"></div></div><div class="progress-labels"><span style="color:var(--green-main);font-weight:700;">✓ Completed!</span></div></div></div><div class="course-footer"><span style="font-size:11px;background:var(--green-pale);color:var(--green-dark);padding:3px 10px;border-radius:20px;font-weight:700;">Certified</span><button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);" onclick="event.stopPropagation();showToast(`Certificate downloaded!`)">Certificate</button></div></a>
+  <a href="profile.html" class="course-card" style="text-decoration:none;"><div class="course-thumb" style="background:linear-gradient(135deg,#c62828,#e53935);">🤖</div><div class="course-body"><div class="course-name">Machine Learning A-Z</div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:100%;"></div></div><div class="progress-labels"><span style="color:var(--green-main);font-weight:700;">✓ Completed!</span></div></div></div><div class="course-footer"><span style="font-size:11px;background:var(--green-pale);color:var(--green-dark);padding:3px 10px;border-radius:20px;font-weight:700;">Certified</span><button class="btn btn-sm" style="background:var(--green-pale);color:var(--green-dark);" onclick="event.stopPropagation();showToast(`Certificate downloaded!`)">Certificate</button></div></a>
+</div></main></div>
+<script src="../js/main.js"></script></body></html>

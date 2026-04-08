@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnGreen — Dashboard</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+
+    /* ============================
+       WELCOME BANNER
+       ============================ */
+    .welcome {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-main) 60%, #3daf63 100%);
+      border-radius: 18px; padding: 30px 36px;
+      color: white; display: flex;
+      justify-content: space-between; align-items: center;
+      margin-bottom: 24px; position: relative; overflow: hidden;
+    }
+    .welcome::before {
+      content: ''; position: absolute;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      top: -100px; right: -60px;
+    }
+    .welcome::after {
+      content: ''; position: absolute;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      bottom: -60px; right: 260px;
+    }
+    .welcome-left { position: relative; z-index: 1; }
+    .welcome-left h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .welcome-left p  { opacity: .82; font-size: 14px; margin-bottom: 18px; }
+    .welcome-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .welcome-emoji { font-size: 88px; opacity: .15; position: relative; z-index: 1; line-height: 1; }
+
+    /* Streak mini badge in welcome */
+    .streak-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px; padding: 5px 13px;
+      font-size: 12px; font-weight: 700; color: white;
+      margin-bottom: 14px; width: fit-content;
+    }
+
+    /* ============================
+       STATS ROW
+       ============================ */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 26px; }
+
+    /* ============================
+       QUICK ACTION CARDS
+       ============================ */
+    .quick-actions {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 14px; margin-bottom: 26px;
+    }
+    .qa-card {
+      background: white; border-radius: 14px; padding: 18px 16px;
+      box-shadow: var(--shadow); cursor: pointer;
+      transition: all 0.22s; text-align: center;
+      text-decoration: none; display: block;
+      border: 2px solid transparent;
+    }
+    .qa-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--green-pale); }
+    .qa-icon {
+      width: 48px; height: 48px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin: 0 auto 11px;
+    }
+    .qa-label { font-size: 13px; font-weight: 700; color: var(--green-dark); }
+    .qa-sub   { font-size: 11px; color: var(--gray-text); margin-top: 3px; }
+
+    /* ============================
+       LEARNING PROGRESS RING
+       ============================ */
+    .progress-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px; margin-bottom: 26px;
+    }
+    .ring-card {
+      background: white; border-radius: 14px; padding: 20px;
+      box-shadow: var(--shadow); text-align: center;
+    }
+    .ring-wrap { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
+    .ring-svg  { transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: var(--gray-border); stroke-width: 8; }
+    .ring-fill  { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1.2s ease; }
+    .ring-val {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 16px; font-weight: 800; color: var(--green-dark);
+    }
+    .ring-title { font-size: 13px; font-weight: 700; color: var(--green-dark); margin-bottom: 3px; }
+    .ring-sub   { font-size: 11px; color: var(--gray-text); }
+
+    /* ============================
+       SECTION HEADING
+       ============================ */
+    .section-heading {
+      font-size: 16px; font-weight: 800; color: var(--green-dark);
+      margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-heading a { font-size: 12px; font-weight: 600; color: var(--green-main); text-decoration: none; }
+    .section-heading a:hover { text-decoration: underline; }
+
+    /* ============================
+       COURSE CARDS
+       ============================ */
+    .course-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 26px; }
+
+    /* ============================
+       TWO COLUMN BOTTOM
+       ============================ */
+    .two-col { display: grid; grid-template-columns: 1fr 350px; gap: 18px; margin-bottom: 26px; }
+
+    /* ============================
+       ACTIVITY FEED
+       ============================ */
+    .activity-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 11px 0; border-bottom: 1px solid var(--gray-border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .act-dot { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .act-strong { font-size: 13px; font-weight: 600; color: var(--gray-dark); }
+    .act-sub    { font-size: 11px; color: var(--gray-text); margin-top: 1px; }
+    .act-time   { font-size: 11px; color: #9aab9a; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+
+    /* ============================
+       CALENDAR
+       ============================ */
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+    .cal-hd   { text-align: center; font-size: 10px; font-weight: 700; color: #9aab9a; padding: 5px 0; }
+    .cal-day  { text-align: center; padding: 6px 2px; font-size: 12px; border-radius: 7px; cursor: pointer; color: var(--gray-text); transition: all 0.15s; }
+    .cal-day:hover  { background: var(--green-pale); }
+    .cal-day.today  { background: var(--green-main); color: white; font-weight: 800; }
+    .cal-day.faded  { color: var(--gray-border); }
+    .cal-day.dot    { position: relative; }
+    .cal-day.dot::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--green-light); }
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-nav span { font-size: 13px; font-weight: 700; color: var(--green-dark); }
+    .cal-nav button { width: 26px; height: 26px; border: none; background: var(--green-pale); border-radius: 7px; cursor: pointer; color: var(--green-dark); font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .cal-nav button:hover { background: var(--green-main); color: white; }
+
+    /* ============================
+       DEADLINE CARDS
+       ============================ */
+    .deadline-card {
+      display: flex; gap: 12px; align-items: center;
+      padding: 11px 14px; border-radius: 11px; border-left: 3px solid; margin-bottom: 9px;
+      transition: transform 0.2s;
+    }
+    .deadline-card:hover { transform: translateX(3px); }
+    .dl-date  { font-size: 11px; font-weight: 800; line-height: 1.3; text-align: center; min-width: 30px; flex-shrink: 0; }
+    .dl-title { font-size: 13px; font-weight: 600; color: var(--gray-dark); }
+    .dl-sub   { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+
+    /* ============================
+       LEADERBOARD
+       ============================ */
+    .lb-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--gray-border);
+    }
+    .lb-item:last-child { border-bottom: none; }
+    .lb-rank { width: 24px; text-align: center; font-size: 13px; font-weight: 800; color: var(--gray-text); flex-shrink: 0; }
+    .lb-rank.gold   { color: #f59e0b; }
+    .lb-rank.silver { color: #9aab9a; }
+    .lb-rank.bronze { color: #cd7c32; }
+    .lb-av { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--green-main), var(--green-light)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: white; flex-shrink: 0; }
+    .lb-name  { flex: 1; font-size: 13px; font-weight: 600; color: var(--gray-dark); }
+    .lb-pts   { font-size: 12px; font-weight: 700; color: var(--green-main); }
+    .lb-bar   { width: 60px; height: 5px; background: var(--gray-border); border-radius: 3px; overflow: hidden; }
+    .lb-fill  { height: 100%; background: linear-gradient(90deg, var(--green-main), var(--green-light)); border-radius: 3px; }
+
+    /* ============================
+       SKILL CHART (bar chart)
+       ============================ */
+    .skill-bar-item { margin-bottom: 14px; }
+    .skill-bar-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+    .skill-bar-head span:first-child { font-weight: 600; color: var(--gray-dark); }
+    .skill-bar-head span:last-child  { font-weight: 700; color: var(--green-main); }
+    .skill-bar-track { height: 8px; background: var(--gray-border); border-radius: 4px; overflow: hidden; }
+    .skill-bar-fill  { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green-main), var(--green-light)); transition: width 1.2s ease; }
+
+    /* ============================
+       MOTIVATIONAL QUOTE CARD
+       ============================ */
+    .quote-card {
+      background: linear-gradient(135deg, #f0faf3, #e8f5ec);
+      border: 1px solid var(--green-pale);
+      border-radius: 14px; padding: 20px 22px;
+      margin-bottom: 26px; display: flex; gap: 16px; align-items: center;
+    }
+    .quote-icon { font-size: 36px; flex-shrink: 0; }
+    .quote-text { font-size: 14px; font-style: italic; color: var(--green-dark); line-height: 1.6; font-weight: 500; }
+    .quote-author { font-size: 12px; color: var(--gray-text); margin-top: 5px; font-style: normal; font-weight: 600; }
+
+    /* ============================
+       NOTIFICATION BELL (navbar)
+       ============================ */
+    .notif-bell { position: relative; cursor: pointer; padding: 8px; border-radius: 9px; transition: background 0.2s; }
+    .notif-bell:hover { background: var(--green-pale); }
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: #e53935; border: 2px solid white; }
+
+    /* ============================
+       SEARCH BAR (top of main)
+       ============================ */
+    .top-bar {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+    }
+    .main-search {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      background: white; border: 2px solid var(--gray-border);
+      border-radius: 11px; padding: 10px 16px;
+      box-shadow: var(--shadow);
+    }
+    .main-search input { border: none; outline: none; font-family: 'Poppins', sans-serif; font-size: 14px; flex: 1; color: var(--gray-dark); background: transparent; }
+    .main-search i     { color: #9aab9a; font-size: 15px; }
+    .main-search input::placeholder { color: #b0bdb0; }
+    .top-bar-date { font-size: 13px; color: var(--gray-text); font-weight: 500; white-space: nowrap; }
+
+    /* ============================
+       FEATURE CARD — recommended
+       ============================ */
+    .recommend-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
+    .rec-card {
+      background: white; border-radius: 14px; padding: 0;
+      box-shadow: var(--shadow); overflow: hidden; display: flex;
+      transition: all 0.22s; cursor: pointer; text-decoration: none;
+    }
+    .rec-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .rec-thumb { width: 90px; display: flex; align-items: center; justify-content: center; font-size: 38px; flex-shrink: 0; }
+    .rec-body  { padding: 14px; flex: 1; }
+    .rec-tag   { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--green-main); margin-bottom: 4px; }
+    .rec-name  { font-size: 13px; font-weight: 700; color: var(--gray-dark); line-height: 1.4; margin-bottom: 6px; }
+    .rec-meta  { font-size: 11px; color: var(--gray-text); display: flex; gap: 10px; }
+
+    /* ============================
+       ANNOUNCEMENT BANNER
+       ============================ */
+    .announce {
+      background: linear-gradient(135deg, #fff3e0, #fff8f0);
+      border: 1px solid #ffe0b2; border-radius: 12px;
+      padding: 14px 18px; display: flex; align-items: center; gap: 14px;
+      margin-bottom: 22px;
+    }
+    .announce i   { font-size: 20px; color: #f57c00; flex-shrink: 0; }
+    .announce p   { font-size: 13px; color: #5d4037; flex: 1; line-height: 1.5; }
+    .announce p b { color: #e65100; }
+    .announce-close { color: #bcaaa4; cursor: pointer; font-size: 18px; padding: 4px; flex-shrink: 0; }
+    .announce-close:hover { color: #5d4037; }
+
+    /* ============================
+       ANIMATIONS
+       ============================ */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fu   { animation: fadeUp 0.45s ease both; }
+    .fu1  { animation: fadeUp 0.45s 0.07s ease both; }
+    .fu2  { animation: fadeUp 0.45s 0.14s ease both; }
+    .fu3  { animation: fadeUp 0.45s 0.21s ease both; }
+    .fu4  { animation: fadeUp 0.45s 0.28s ease both; }
+    .fu5  { animation: fadeUp 0.45s 0.35s ease both; }
+
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="navbar">
+  <a class="navbar-logo" href="dashboard.html">
+    <div class="logo-box">🎓</div>Learn<span>Green</span>
+  </a>
+  <div class="navbar-right" style="gap:6px;">
+    <!-- Search shortcut -->
+    <div class="notif-bell" onclick="document.getElementById('dash-search').focus()" title="Search">
+      <i class="fas fa-search" style="font-size:16px;color:var(--gray-text);"></i>
+    </div>
+    <!-- Notification bell -->
+    <div class="notif-bell" onclick="showToast('You have 3 new notifications 🔔')" title="Notifications">
+      <i class="fas fa-bell" style="font-size:16px;color:var(--gray-text);"></i>
+      <div class="notif-dot"></div>
+    </div>
+    <a href="all-courses.html" class="btn btn-outline" style="margin-left:4px;"><i class="fas fa-th"></i> Browse</a>
+    <a href="profile.html"     class="btn btn-primary"><i class="fas fa-user"></i> <span id="nav-name">Account</span></a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     PAGE LAYOUT
+     ============================================================ -->
+<div class="page-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-avatar">A</div>
+      <div class="sidebar-name"   id="sb-name">Alex Johnson</div>
+      <div class="sidebar-role"   id="sb-role">Student • Pro</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-section-label">Main</li>
+      <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i>Dashboard</a></li>
+      <li><a href="my-courses.html">   <i class="fas fa-book-open"></i>My Courses <span class="badge-pill">5</span></a></li>
+      <li><a href="all-courses.html">  <i class="fas fa-th-large"></i>All Courses</a></li>
+      <li><a href="assessment.html">   <i class="fas fa-tasks"></i>Assessments <span class="badge-pill">2</span></a></li>
+      <li class="menu-section-label">Learning</li>
+      <li><a href="course-player.html"><i class="fas fa-play-circle"></i>Continue</a></li>
+      <li><a href="quiz.html">         <i class="fas fa-question-circle"></i>Quizzes</a></li>
+      <li class="menu-section-label">Account</li>
+      <li><a href="profile.html">      <i class="fas fa-user"></i>Profile</a></li>
+      <li><a href="edit-profile.html"> <i class="fas fa-cog"></i>Settings</a></li>
+      <li><a href="admin-dashboard.html"><i class="fas fa-shield-alt"></i>Admin</a></li>
+      <li><a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- TOP SEARCH BAR + DATE -->
+    <div class="top-bar fu">
+      <div class="main-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="dash-search" placeholder="Search courses, lessons, topics..."/>
+        <kbd style="font-size:11px;color:#9aab9a;background:var(--gray-bg);border-radius:5px;padding:2px 6px;border:1px solid var(--gray-border);">⌘K</kbd>
+      </div>
+      <div class="top-bar-date" id="today-date"></div>
+    </div>
+
+    <!-- ANNOUNCEMENT BANNER -->
+    <div class="announce fu" id="announce-bar">
+      <i class="fas fa-fire"></i>
+      <p>🎉 <b>Flash Sale:</b> Get 80% off on all AI & Machine Learning courses — Offer ends in <b id="countdown">23:47:12</b>!</p>
+      <span class="announce-close" onclick="closeAnnounce()"><i class="fas fa-times"></i></span>
+    </div>
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome fu">
+      <div class="welcome-left">
+        <div class="streak-pill">🔥 12-Day Streak — Keep it up!</div>
+        <h2 id="welcome-msg">Good morning, Alex! 🌿</h2>
+        <p>You have <strong>2 lessons</strong> left today. You're doing great!</p>
+        <div class="welcome-actions">
+          <a href="course-player.html" class="btn btn-white" style="background:rgba(255,255,255,0.2);color:white;border-color:rgba(255,255,255,0.35);">
+            <i class="fas fa-play"></i> Continue Learning
+          </a>
+          <a href="all-courses.html" class="btn" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);">
+            <i class="fas fa-compass"></i> Explore Courses
+          </a>
+        </div>
+      </div>
+      <div class="welcome-emoji">📚</div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="stats-row">
+      <div class="stat-card fu1">
+        <div class="stat-icon green"><i class="fas fa-book-open"></i></div>
+        <div>
+          <div class="stat-value" id="stat-courses">5</div>
+          <div class="stat-label">Courses Enrolled</div>
+          <div class="stat-change">+1 this month</div>
+        </div>
+      </div>
+      <div class="stat-card fu2">
+        <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+        <div>
+          <div class="stat-value">42h</div>
+          <div class="stat-label">Hours Learned</div>
+          <div class="stat-change">+8h this week</div>
+        </div>
+      </div>
+      <div class="stat-card fu3">
+        <div class="stat-icon orange"><i class="fas fa-fire"></i></div>
+        <div>
+          <div class="stat-value">12🔥</div>
+          <div class="stat-label">Day Streak</div>
+          <div class="stat-change">Personal best!</div>
+        </div>
+      </div>
+      <div class="stat-card fu4">
+        <div class="stat-icon purple"><i class="fas fa-certificate"></i></div>
+        <div>
+          <div class="stat-value">3</div>
+          <div class="stat-label">Certificates</div>
+          <div class="stat-change">+1 this month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-heading fu">Quick Actions</div>
+    <div class="quick-actions fu">
+      <a href="course-player.html" class="qa-card">
+        <div class="qa-icon" style="background:var(--green-pale);"><i class="fas fa-play" style="color:var(--green-main);"></i></div>
+        <div class="qa-label">Continue Course</div>
+        <div class="qa-sub">Python Lesson 27</div>
+      </a>
+      <a href="quiz.html" class="qa-card">
+        <div class="qa-icon" style="background:#fce4ec;"><i class="fas fa-question-circle" style="color:#c62828;"></i></div>
+        <div class="qa-label">Take Quiz</div>
+        <div class="qa-sub">2 quizzes due</div>
+      </a>
+      <a href="all-courses.html" class="qa-card">
+        <div class="qa-icon" style="background:#e3f2fd;"><i class="fas fa-search" style="color:#1565c0;"></i></div>
+        <div class="qa-label">Browse Courses</div>
+        <div class="qa-sub">200+ available</div>
+      </a>
+      <a href="profile.html" class="qa-card">
+        <div class="qa-icon" style="background:#f3e8fd;"><i class="fas fa-certificate" style="color:#6d28d9;"></i></div>
+        <div class="qa-label">My Certificates</div>
+        <div class="qa-sub">3 earned</div>
+      </a>
+    </div>
+
+    <!-- MOTIVATIONAL QUOTE -->
+    <div class="quote-card fu">
+      <div class="quote-icon">💡</div>
+      <div>
+        <div class="quote-text" id="quote-text">"The expert in anything was once a beginner."</div>
+        <div class="quote-author" id="quote-author">— Helen Hayes</div>
+      </div>
+      <button onclick="nextQuote()" style="background:var(--green-pale);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--green-dark);cursor:pointer;flex-shrink:0;font-family:'Poppins',sans-serif;" title="Next quote">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+
+    <!-- LEARNING PROGRESS RINGS -->
+    <div class="section-heading fu">Weekly Learning Progress</div>
+    <div class="progress-section fu">
+      <div class="ring-card">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
+            <circle class="ring-track" cx="45" cy="45" r="37"/>
+            <circle class="ring-fill" cx="45" cy="45" r="37"
+              stroke="var(--green-main)"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="81"
+              id="ring-weekly"/>
+          </svg>
+          <div class="ring-val">65%</div>
+        </div>
+        <div class="ring-title">Weekly Goal</div>
+        <div class="ring-sub">6.5 / 10 hrs target</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
+            <circle class="ring-track" cx="45" cy="45" r="37"/>
+            <circle class="ring-fill" cx="45" cy="45" r="37"
+              stroke="#1976d2"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="46.5"/>
+          </svg>
+          <div class="ring-val" style="color:#1976d2;">80%</div>
+        </div>
+        <div class="ring-title">Python Course</div>
+        <div class="ring-sub">32 / 40 lessons done</div>
+      </div>
+      <div class="ring-card">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
+            <circle class="ring-track" cx="45" cy="45" r="37"/>
+            <circle class="ring-fill" cx="45" cy="45" r="37"
+              stroke="#f57c00"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="162.75"/>
+          </svg>
+          <div class="ring-val" style="color:#f57c00;">30%</div>
+        </div>
+        <div class="ring-title">Design Course</div>
+        <div class="ring-sub">9 / 30 lessons done</div>
+      </div>
+    </div>
+
+    <!-- CONTINUE LEARNING COURSES -->
+    <div class="section-heading fu">
+      Continue Learning
+      <a href="my-courses.html">View all →</a>
+    </div>
+    <div class="course-grid-3">
+      <a href="course-player.html" class="course-card" style="text-decoration:none;">
+        <div class="course-thumb" style="background:linear-gradient(135deg,#1a5c2a,#2d8c4e);">
+          <div>🐍</div><span class="course-tag tag-hot">Popular</span>
+        </div>
+        <div class="course-body">
+          <div class="course-lang">Python • English</div>
+          <div class="course-name">Python for Beginners – Complete Bootcamp</div>
+          <div class="course-meta"><span><i class="fas fa-star" style="color:#f59e0b"></i> 4.9</span><span><i class="fas fa-clock"></i> 24h</span><span><i class="fas fa-user"></i> Dr. Sarah K.</span></div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:65%;"></div></div>
+            <div class="progress-labels"><span>65% complete</span><span>26/40</span></div>
+          </div>
+        </div>
+        <div class="course-footer"><span class="course-price free">Enrolled</span><span style="font-size:12px;font-weight:700;color:var(--green-main);">Continue →</span></div>
+      </a>
+      <a href="course-player.html" class="course-card" style="text-decoration:none;">
+        <div class="course-thumb" style="background:linear-gradient(135deg,#1565c0,#1976d2);">
+          <div>🎨</div><span class="course-tag tag-new">New</span>
+        </div>
+        <div class="course-body">
+          <div class="course-lang">Design • Hindi</div>
+          <div class="course-name">UI/UX Design Masterclass with Figma</div>
+          <div class="course-meta"><span><i class="fas fa-star" style="color:#f59e0b"></i> 4.8</span><span><i class="fas fa-clock"></i> 18h</span></div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:30%;"></div></div>
+            <div class="progress-labels"><span>30% complete</span><span>9/30</span></div>
+          </div>
+        </div>
+        <div class="course-footer"><span class="course-price free">Enrolled</span><span style="font-size:12px;font-weight:700;color:var(--green-main);">Continue →</span></div>
+      </a>
+      <a href="course-player.html" class="course-card" style="text-decoration:none;">
+        <div class="course-thumb" style="background:linear-gradient(135deg,#7c3aed,#9333ea);">
+          <div>⚛️</div><span class="course-tag tag-trend">Trending</span>
+        </div>
+        <div class="course-body">
+          <div class="course-lang">React • English</div>
+          <div class="course-name">React.js — Build Modern Web Apps</div>
+          <div class="course-meta"><span><i class="fas fa-star" style="color:#f59e0b"></i> 4.7</span><span><i class="fas fa-clock"></i> 32h</span></div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:10%;"></div></div>
+            <div class="progress-labels"><span>10% complete</span><span>3/48</span></div>
+          </div>
+        </div>
+        <div class="course-footer"><span class="course-price free">Enrolled</span><span style="font-size:12px;font-weight:700;color:var(--green-main);">Continue →</span></div>
+      </a>
+    </div>
+
+    <!-- RECOMMENDED COURSES -->
+    <div class="section-heading fu">
+      Recommended For You
+      <a href="all-courses.html">Browse all →</a>
+    </div>
+    <div class="recommend-section fu">
+      <a href="course-detail.html" class="rec-card">
+        <div class="rec-thumb" style="background:linear-gradient(135deg,#c62828,#e53935);">🤖</div>
+        <div class="rec-body">
+          <div class="rec-tag">AI / Machine Learning</div>
+          <div class="rec-name">Machine Learning A-Z with Python & TensorFlow</div>
+          <div class="rec-meta"><span><i class="fas fa-star" style="color:#f59e0b;"></i> 4.9</span><span><i class="fas fa-users"></i> 22K</span><span style="font-weight:700;color:var(--green-dark);">₹999</span></div>
+        </div>
+      </a>
+      <a href="course-detail.html" class="rec-card">
+        <div class="rec-thumb" style="background:linear-gradient(135deg,#f57c00,#ff9800);">📱</div>
+        <div class="rec-body">
+          <div class="rec-tag">Mobile Dev • Marathi</div>
+          <div class="rec-name">Flutter & Dart — Build iOS & Android Apps</div>
+          <div class="rec-meta"><span><i class="fas fa-star" style="color:#f59e0b;"></i> 4.6</span><span><i class="fas fa-users"></i> 5K</span><span style="font-weight:700;color:var(--green-dark);">₹1299</span></div>
+        </div>
+      </a>
+      <a href="course-detail.html" class="rec-card">
+        <div class="rec-thumb" style="background:linear-gradient(135deg,#00796b,#009688);">📊</div>
+        <div class="rec-body">
+          <div class="rec-tag">Data Science • Tamil</div>
+          <div class="rec-name">Data Analysis with Python & Pandas</div>
+          <div class="rec-meta"><span><i class="fas fa-star" style="color:#f59e0b;"></i> 4.8</span><span><i class="fas fa-users"></i> 9K</span><span style="font-weight:700;color:var(--green-main);">FREE</span></div>
+        </div>
+      </a>
+      <a href="course-detail.html" class="rec-card">
+        <div class="rec-thumb" style="background:linear-gradient(135deg,#37474f,#546e7a);">☁️</div>
+        <div class="rec-body">
+          <div class="rec-tag">DevOps • German</div>
+          <div class="rec-name">Docker & Kubernetes Complete Guide 2026</div>
+          <div class="rec-meta"><span><i class="fas fa-star" style="color:#f59e0b;"></i> 4.7</span><span><i class="fas fa-users"></i> 7K</span><span style="font-weight:700;color:var(--green-dark);">₹1999</span></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- SKILLS + LEADERBOARD + ACTIVITY + CALENDAR -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:26px;">
+
+      <!-- SKILL PROGRESS -->
+      <div class="card fu">
+        <div class="card-title">My Skill Progress</div>
+        <div class="skill-bar-item">
+          <div class="skill-bar-head"><span>🐍 Python</span><span>82%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:82%;"></div></div>
+        </div>
+        <div class="skill-bar-item">
+          <div class="skill-bar-head"><span>🎨 UI/UX Design</span><span>45%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:45%;background:linear-gradient(90deg,#1565c0,#42a5f5);"></div></div>
+        </div>
+        <div class="skill-bar-item">
+          <div class="skill-bar-head"><span>⚛️ React.js</span><span>28%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:28%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+        </div>
+        <div class="skill-bar-item">
+          <div class="skill-bar-head"><span>🤖 Machine Learning</span><span>70%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:70%;background:linear-gradient(90deg,#c62828,#ef5350);"></div></div>
+        </div>
+        <div class="skill-bar-item">
+          <div class="skill-bar-head"><span>📊 Data Analysis</span><span>95%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:95%;background:linear-gradient(90deg,#00796b,#4db6ac);"></div></div>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="card fu">
+        <div class="card-title">🏆 Weekly Leaderboard</div>
+        <div class="lb-item">
+          <div class="lb-rank gold">🥇</div>
+          <div class="lb-av" style="background:linear-gradient(135deg,#c62828,#ef5350);">R</div>
+          <div class="lb-name">Rahul Sharma</div>
+          <div class="lb-bar"><div class="lb-fill" style="width:95%;"></div></div>
+          <div class="lb-pts">980 pts</div>
+        </div>
+        <div class="lb-item">
+          <div class="lb-rank silver">🥈</div>
+          <div class="lb-av" style="background:linear-gradient(135deg,#1565c0,#42a5f5);">P</div>
+          <div class="lb-name">Priya Nair</div>
+          <div class="lb-bar"><div class="lb-fill" style="width:82%;"></div></div>
+          <div class="lb-pts">840 pts</div>
+        </div>
+        <div class="lb-item" style="background:var(--green-pale);border-radius:9px;padding:6px 8px;margin:4px -8px;">
+          <div class="lb-rank" style="color:var(--green-main);font-size:11px;">YOU</div>
+          <div class="lb-av" id="lb-you">A</div>
+          <div class="lb-name" id="lb-you-name" style="color:var(--green-dark);font-weight:700;">Alex Johnson</div>
+          <div class="lb-bar"><div class="lb-fill" style="width:72%;"></div></div>
+          <div class="lb-pts" style="color:var(--green-dark);">720 pts</div>
+        </div>
+        <div class="lb-item">
+          <div class="lb-rank bronze">🥉</div>
+          <div class="lb-av" style="background:linear-gradient(135deg,#f57c00,#ffb74d);">A</div>
+          <div class="lb-name">Amit Patel</div>
+          <div class="lb-bar"><div class="lb-fill" style="width:60%;"></div></div>
+          <div class="lb-pts">610 pts</div>
+        </div>
+        <div class="lb-item">
+          <div class="lb-rank">4</div>
+          <div class="lb-av" style="background:linear-gradient(135deg,#6d28d9,#a78bfa);">S</div>
+          <div class="lb-name">Sneha Deo</div>
+          <div class="lb-bar"><div class="lb-fill" style="width:48%;"></div></div>
+          <div class="lb-pts">480 pts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY + CALENDAR + DEADLINES -->
+    <div class="two-col">
+
+      <!-- ACTIVITY FEED -->
+      <div class="card fu">
+        <div class="card-title">Recent Activity</div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:var(--green-pale);">✅</div>
+          <div><div class="act-strong">Completed: Python Variables &amp; Types</div><div class="act-sub">Python Bootcamp • Lesson 26</div></div>
+          <span class="act-time">2h ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:#fce4ec;">🏆</div>
+          <div><div class="act-strong">Earned Certificate: JS Basics</div><div class="act-sub">Score: 92% — Distinction</div></div>
+          <span class="act-time">Yesterday</span>
+        </div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:#e3f2fd;">📝</div>
+          <div><div class="act-strong">Quiz Submitted: CSS Flexbox</div><div class="act-sub">Score: 85% — Passed</div></div>
+          <span class="act-time">2 days ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:#f3e8fd;">⭐</div>
+          <div><div class="act-strong">Left 5-star review: React.js Course</div><div class="act-sub">Rated: Excellent</div></div>
+          <span class="act-time">3 days ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:var(--green-pale);">🎓</div>
+          <div><div class="act-strong">Enrolled: React.js Masterclass</div><div class="act-sub">New journey started</div></div>
+          <span class="act-time">3 days ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="act-dot" style="background:#fff3e0;">📖</div>
+          <div><div class="act-strong">Read: Python OOP Concepts</div><div class="act-sub">Reference material</div></div>
+          <span class="act-time">4 days ago</span>
+        </div>
+      </div>
+
+      <!-- CALENDAR + DEADLINES -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card fu">
+          <div class="cal-nav">
+            <button onclick="showToast('Prev month')"><i class="fas fa-chevron-left"></i></button>
+            <span id="cal-month-label">March 2026</span>
+            <button onclick="showToast('Next month')"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-hd">Su</div><div class="cal-hd">Mo</div><div class="cal-hd">Tu</div><div class="cal-hd">We</div><div class="cal-hd">Th</div><div class="cal-hd">Fr</div><div class="cal-hd">Sa</div>
+            <div class="cal-day faded">23</div><div class="cal-day faded">24</div><div class="cal-day faded">25</div><div class="cal-day faded">26</div><div class="cal-day faded">27</div><div class="cal-day faded">28</div><div class="cal-day">1</div>
+            <div class="cal-day">2</div><div class="cal-day dot">3</div><div class="cal-day">4</div><div class="cal-day dot">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
+            <div class="cal-day">9</div><div class="cal-day dot">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day today">15</div>
+            <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day dot">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div>
+            <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day dot">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
+            <div class="cal-day">30</div><div class="cal-day">31</div>
+          </div>
+        </div>
+        <div class="card fu">
+          <div class="card-title">📌 Upcoming Deadlines</div>
+          <div class="deadline-card" style="background:var(--green-pale);border-left-color:var(--green-main);">
+            <div class="dl-date" style="color:var(--green-dark);">MAR<br/>18</div>
+            <div><div class="dl-title">Python Final Quiz</div><div class="dl-sub">Due 11:59 PM • 3 days left</div></div>
+            <a href="quiz.html" class="btn btn-primary btn-sm" style="text-decoration:none;margin-left:auto;">Start</a>
+          </div>
+          <div class="deadline-card" style="background:#fff3e0;border-left-color:#f57c00;">
+            <div class="dl-date" style="color:#e65100;">MAR<br/>26</div>
+            <div><div class="dl-title">React Project Submission</div><div class="dl-sub">Portfolio project • 11 days left</div></div>
+            <a href="course-player.html" class="btn btn-sm" style="background:#fff3e0;color:#e65100;border:1px solid #f57c00;text-decoration:none;margin-left:auto;">View</a>
+          </div>
+          <div class="deadline-card" style="background:#e3f2fd;border-left-color:#1565c0;">
+            <div class="dl-date" style="color:#1565c0;">APR<br/>5</div>
+            <div><div class="dl-title">UI/UX Design Project</div><div class="dl-sub">Final submission • 21 days left</div></div>
+            <a href="course-player.html" class="btn btn-sm" style="background:#e3f2fd;color:#1565c0;border:1px solid #1976d2;text-decoration:none;margin-left:auto;">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+
+/* ============================================================
+   LOAD USER NAME from localStorage (set by register/login)
+   ============================================================ */
+function loadDashboardUser() {
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem('lg_user') || '{}'); } catch(e) {}
+
+  const firstName = user.firstName || 'Alex';
+  const lastName  = user.lastName  || 'Johnson';
+  const fullName  = (firstName + ' ' + lastName).trim();
+  const initial   = firstName.charAt(0).toUpperCase();
+  const role      = (user.role || 'Student') + (user.plan ? ' • ' + user.plan : '');
+
+  // Sidebar
+  const sbAv = document.getElementById('sb-avatar');
+  const sbNm = document.getElementById('sb-name');
+  const sbRl = document.getElementById('sb-role');
+  if (sbAv) sbAv.textContent = initial;
+  if (sbNm) sbNm.textContent = fullName;
+  if (sbRl) sbRl.textContent = role;
+
+  // Navbar account button
+  const navName = document.getElementById('nav-name');
+  if (navName) navName.textContent = firstName;
+
+  // Welcome greeting with time of day
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const welMsg = document.getElementById('welcome-msg');
+  if (welMsg) welMsg.textContent = greet + ', ' + firstName + '! 🌿';
+
+  // Leaderboard "you" row
+  const lbYou   = document.getElementById('lb-you');
+  const lbYouNm = document.getElementById('lb-you-name');
+  if (lbYou)   lbYou.textContent   = initial;
+  if (lbYouNm) lbYouNm.textContent = fullName;
+}
+
+/* ============================================================
+   TODAY'S DATE
+   ============================================================ */
+function setDate() {
+  const el = document.getElementById('today-date');
+  if (!el) return;
+  const now = new Date();
+  el.textContent = now.toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+/* ============================================================
+   COUNTDOWN TIMER (flash sale)
+   ============================================================ */
+function startCountdown() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  let h = 23, m = 47, s = 12;
+  setInterval(() => {
+    s--;
+    if (s < 0) { s = 59; m--; }
+    if (m < 0) { m = 59; h--; }
+    if (h < 0) { h = 23; }
+    el.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }, 1000);
+}
+
+/* ============================================================
+   CLOSE ANNOUNCEMENT BANNER
+   ============================================================ */
+function closeAnnounce() {
+  const el = document.getElementById('announce-bar');
+  if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(-10px)'; setTimeout(() => el.remove(), 300); }
+}
+
+/* ============================================================
+   MOTIVATIONAL QUOTES
+   ============================================================ */
+const quotes = [
+  { q: '"The expert in anything was once a beginner."', a: '— Helen Hayes' },
+  { q: '"Learning is not attained by chance, it must be sought for with ardor."', a: '— Abigail Adams' },
+  { q: '"The beautiful thing about learning is that no one can take it away from you."', a: '— B.B. King' },
+  { q: '"An investment in knowledge pays the best interest."', a: '— Benjamin Franklin' },
+  { q: '"Education is the passport to the future."', a: '— Malcolm X' },
+  { q: '"The more that you read, the more things you will know."', a: '— Dr. Seuss' },
+  { q: '"Live as if you were to die tomorrow. Learn as if you were to live forever."', a: '— Mahatma Gandhi' },
+];
+let qIdx = 0;
+function nextQuote() {
+  qIdx = (qIdx + 1) % quotes.length;
+  const qt = document.getElementById('quote-text');
+  const qa = document.getElementById('quote-author');
+  if (qt) { qt.style.opacity = 0; setTimeout(() => { qt.textContent = quotes[qIdx].q; qt.style.opacity = 1; }, 200); }
+  if (qa) { qa.style.opacity = 0; setTimeout(() => { qa.textContent = quotes[qIdx].a; qa.style.opacity = 1; }, 200); }
+}
+// Auto-rotate quote every 30 seconds
+setInterval(nextQuote, 30000);
+
+/* ============================================================
+   SEARCH BAR LIVE FILTER
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const search = document.getElementById('dash-search');
+  if (search) {
+    search.addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      if (!q) return;
+      // Just a demo — shows toast with search term
+      // In real app: redirect to all-courses.html?q=...
+    });
+    search.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        showToast('Searching for: ' + this.value.trim());
+        setTimeout(() => { window.location.href = 'all-courses.html'; }, 700);
+      }
+    });
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboardUser();
+  setDate();
+  startCountdown();
+});
+
+</script>
+</body>
+</html>
